@@ -97,15 +97,16 @@ app.post('/api/auth/register', [
         email,
         password: hashedPassword,
         phone: phone || null
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        role: true,
-        createdAt: true
       }
+      // ,
+      // select: {
+      //   id: true,
+      //   name: true,
+      //   email: true,
+      //   phone: true,
+      //   role: true,
+      //   createdAt: true
+      // }
     });
 
     // Generate JWT
@@ -812,7 +813,7 @@ app.get('*', (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
