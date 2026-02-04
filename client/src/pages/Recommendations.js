@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
-import { formatPrice, getListingTypeLabel, getPropertyTypeLabel } from '../utils/helpers';
+
+import ListingCard from '../components/ListingCard';
 import './Recommendations.css';
 
 const Recommendations = () => {
@@ -16,9 +17,10 @@ const Recommendations = () => {
     try {
       setLoading(true);
       const response = await api.get('/recommendations?limit=20');
-      setRecommendations(response.data.recommendations);
+      setRecommendations(response.data.recommendations || []);
     } catch (error) {
       console.error('Error loading recommendations:', error);
+      setRecommendations([]);
     } finally {
       setLoading(false);
     }
@@ -65,37 +67,6 @@ const Recommendations = () => {
   );
 };
 
-const ListingCard = ({ listing }) => {
-  const imageUrl =
-    listing.images && listing.images.length > 0
-      ? listing.images[0].url
-      : null;
-
-  return (
-    <Link to={`/listings/${listing.id}`} className="listing-card">
-      <div className="listing-image-container">
-        {imageUrl ? (
-          <img src={imageUrl} alt={listing.title} className="listing-image" />
-        ) : (
-          <div className="no-image">🏠</div>
-        )}
-        <div className="listing-type-badge">
-          {getListingTypeLabel(listing.listingType)}
-        </div>
-      </div>
-      <div className="listing-content">
-        <h3 className="listing-title">{listing.title}</h3>
-        <div className="listing-location">
-          📍 {listing.city}, {listing.state}
-        </div>
-        <div className="listing-price">{formatPrice(listing.price, listing.currency)}</div>
-        <div className="listing-property-type">
-          {getPropertyTypeLabel(listing.propertyType)}
-        </div>
-      </div>
-    </Link>
-  );
-};
 
 export default Recommendations;
 

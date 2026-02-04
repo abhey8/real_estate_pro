@@ -16,6 +16,7 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    console.log('API Request:', config.method, config.url, config.headers);
     return config;
   },
   (error) => {
@@ -27,7 +28,14 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    if (
+      (error.response?.status === 401 || error.response?.status === 403) &&
+      !error.config.url.includes('/auth/login') &&
+      !error.config.url.includes('/favorites') &&
+      !error.config.url.includes('/listings')
+    ) {
+      console.error('Unauthorized access at:', error.config?.url);
+      // alert('Auth Error: ' + error.response.status + ' at ' + error.config.url);
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';

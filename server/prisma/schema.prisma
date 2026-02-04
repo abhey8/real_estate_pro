@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -20,6 +17,8 @@ model User {
 
   // Relations
   listings  Listing[]
+  favorites Favorite[]
+  loans     LoanApplication[]
 }
 
 model Listing {
@@ -45,6 +44,8 @@ model Listing {
   latitude     Float?
   longitude    Float?
 
+  status       String        @default("ACTIVE")
+
   // your JS code passes an array, Prisma will store it as JSON
   amenities    Json
 
@@ -55,6 +56,44 @@ model Listing {
   owner        User          @relation(fields: [ownerId], references: [id])
 
   images       ListingImage[]
+  favorites    Favorite[]
+  loans        LoanApplication[]
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+
+  listingId Int
+  listing   Listing  @relation(fields: [listingId], references: [id])
+
+  @@unique([userId, listingId])
+}
+
+model LoanApplication {
+  id           Int      @id @default(autoincrement())
+  loanAmount   Decimal  @db.Decimal(10, 2)
+  tenure       Int
+  purpose      String
+  employment   String
+  annualIncome Decimal  @db.Decimal(10, 2)
+  name         String
+  email        String
+  phone        String
+  address      String
+  status       String   @default("PENDING")
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id])
+
+  listingId    Int?
+  listing      Listing? @relation(fields: [listingId], references: [id])
 }
 
 model ListingImage {

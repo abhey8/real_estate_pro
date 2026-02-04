@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { formatPrice, getListingTypeLabel, getPropertyTypeLabel, getStatusLabel, getStatusColor } from '../utils/helpers';
 import './Dashboard.css';
@@ -8,7 +8,7 @@ const Dashboard = () => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
+
 
   useEffect(() => {
     loadListings();
@@ -18,7 +18,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const response = await api.get('/user/listings');
-      setListings(response.data.listings);
+      setListings(response.data.listings || []);
     } catch (error) {
       console.error('Error loading listings:', error);
       setError('Failed to load listings');
@@ -70,7 +70,7 @@ const Dashboard = () => {
 
         {error && <div className="error">{error}</div>}
 
-        {listings.length === 0 ? (
+        {listings?.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">🏠</div>
             <h2>No listings yet</h2>

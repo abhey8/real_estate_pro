@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -22,7 +23,7 @@ const ListingDetail = () => {
 
   useEffect(() => {
     loadListing();
-    if (isAuthenticated) {
+    if (isAuthenticated && localStorage.getItem('token')) {
       checkFavorite();
     }
   }, [id, isAuthenticated]);
@@ -101,6 +102,12 @@ const ListingDetail = () => {
 
   return (
     <div className="page-container">
+      {listing && (
+        <Helmet>
+          <title>{listing.title} | RealEstate Pro</title>
+          <meta name="description" content={`Check out this ${listing.propertyType.toLowerCase()} in ${listing.city}. ${listing.bedrooms} Beds, ${listing.bathrooms} Baths. Price: ${formatPrice(listing.price, listing.currency)}.`} />
+        </Helmet>
+      )}
       <div className="container">
         <Link to="/" className="back-link">
           ← Back to Listings
@@ -142,23 +149,22 @@ const ListingDetail = () => {
                 <button
                   onClick={handleFavorite}
                   disabled={favoriteLoading}
-                  className={`btn ${isFavorite ? 'btn-danger' : 'btn-outline'}`}
+                  className={`btn ${isFavorite ? 'btn-danger' : 'btn-outline-primary'}`}
                 >
                   {isFavorite ? '❤️ Remove Favorite' : '🤍 Add to Favorites'}
                 </button>
                 {isAuthenticated && (
-                  <Link
-                    to="/loans/apply"
-                    state={{ listing }}
+                  <button
+                    onClick={() => alert('Feature in Development: Loan applications are coming soon!')}
                     className="btn btn-success"
                   >
                     💰 Apply for Loan
-                  </Link>
+                  </button>
                 )}
                 <Link
                   to="/compare"
                   state={{ listingIds: [listing.id] }}
-                  className="btn btn-outline"
+                  className="btn btn-outline-primary"
                 >
                   📊 Compare
                 </Link>

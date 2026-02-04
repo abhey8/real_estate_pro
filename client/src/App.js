@@ -16,6 +16,7 @@ import Favorites from './pages/Favorites';
 import Recommendations from './pages/Recommendations';
 import LoanApplication from './pages/LoanApplication';
 import Compare from './pages/Compare';
+import Profile from './pages/Profile';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -76,6 +77,14 @@ function AppContent() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               }
             />

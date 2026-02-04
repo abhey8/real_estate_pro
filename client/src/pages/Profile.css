@@ -1,0 +1,78 @@
+.profile-header {
+  background: white;
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--border-color);
+}
+
+.profile-info h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+}
+
+.profile-email {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.profile-phone {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.profile-logout {
+  margin-top: 1rem;
+}
+
+.profile-stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 1rem 2rem;
+  background: var(--bg-color);
+  border-radius: var(--radius-md);
+}
+
+.stat-value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent-color);
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.profile-listings h2 {
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+/* Dark Mode Adaptation */
+body.dark-mode .profile-header {
+  background: var(--surface-color);
+  border-color: var(--border-color);
+}
+
+body.dark-mode .profile-info h1 {
+  color: var(--primary-color);
+}
+
+body.dark-mode .stat-card {
+  background: rgba(255, 255, 255, 0.05);
+}
