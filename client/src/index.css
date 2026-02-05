@@ -81,6 +81,22 @@ body.dark-mode .auth-container {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
 
+/* Fix Button Contrast in Dark Mode */
+body.dark-mode .btn-secondary {
+  background-color: transparent;
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+body.dark-mode .btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .btn-primary {
+  color: #0f172a; /* Dark text for contrast against light blue */
+  font-weight: 700;
+}
+
 .theme-toggle {
   background: none;
   border: none;

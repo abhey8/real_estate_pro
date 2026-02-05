@@ -20,6 +20,7 @@ const ListingDetail = () => {
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const [showContact, setShowContact] = useState(false);
 
   useEffect(() => {
     loadListing();
@@ -223,27 +224,42 @@ const ListingDetail = () => {
             {listing.owner && (
               <div className="listing-contact">
                 <h3>Contact Owner</h3>
-                <div className="contact-info">
-                  <div className="contact-item">
-                    <strong>Name:</strong> {listing.owner.name}
+
+                {!showContact ? (
+                  <div className="contact-actions">
+                    <button onClick={() => setShowContact(true)} className="btn btn-primary btn-lg">
+                      📞 Contact Seller
+                    </button>
+                    <button onClick={() => alert('Proposal feature in development!')} className="btn btn-outline-primary btn-lg" style={{ marginLeft: '1rem' }}>
+                      💬 Make an Offer
+                    </button>
                   </div>
-                  {listing.owner.email && (
+                ) : (
+                  <div className="contact-info-card">
                     <div className="contact-item">
-                      <strong>Email:</strong>{' '}
-                      <a href={`mailto:${listing.owner.email}`}>
-                        {listing.owner.email}
-                      </a>
+                      <strong>Name:</strong> {listing.owner.name}
                     </div>
-                  )}
-                  {listing.owner.phone && (
-                    <div className="contact-item">
-                      <strong>Phone:</strong>{' '}
-                      <a href={`tel:${listing.owner.phone}`}>
-                        {listing.owner.phone}
-                      </a>
+                    {listing.owner.email && (
+                      <div className="contact-item">
+                        <strong>Email:</strong>{' '}
+                        <a href={`mailto:${listing.owner.email}`}>
+                          {listing.owner.email}
+                        </a>
+                      </div>
+                    )}
+                    {listing.owner.phone && (
+                      <div className="contact-item">
+                        <strong>Phone:</strong>{' '}
+                        <a href={`tel:${listing.owner.phone}`}>
+                          {listing.owner.phone}
+                        </a>
+                      </div>
+                    )}
+                    <div className="contact-note">
+                      <small>Mention <strong>RealEstate Pro</strong> when you contact the seller.</small>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

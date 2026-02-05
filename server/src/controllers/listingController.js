@@ -147,6 +147,22 @@ const createListing = async (req, res) => {
             images = []
         } = req.body;
 
+        let processedImages = [];
+
+        // Handle URL images
+        if (images) {
+            const urlImages = Array.isArray(images) ? images : images.split('\n');
+            processedImages = urlImages.map(url => ({ url: typeof url === 'string' ? url.trim() : url.url })).filter(img => img.url);
+        }
+
+        // Handle Uploaded Files
+        if (req.files && req.files.length > 0) {
+            const uploadedImages = req.files.map(file => ({
+                url: `${req.protocol}://${req.get('host')}/uploads/${file.filename}`
+            }));
+            processedImages = [...processedImages, ...uploadedImages];
+        }
+
         const listing = await prisma.listing.create({
             data: {
                 title,
@@ -166,13 +182,10 @@ const createListing = async (req, res) => {
                 zipCode: zipCode || null,
                 latitude: latitude ? parseFloat(latitude) : null,
                 longitude: longitude ? parseFloat(longitude) : null,
-                amenities: Array.isArray(amenities) ? amenities : [],
+                amenities: Array.isArray(amenities) ? amenities : (typeof amenities === 'string' ? amenities.split(',').map(a => a.trim()).filter(a => a) : []),
                 ownerId: req.user.id,
                 images: {
-                    create: images.map(img => ({
-                        url: typeof img === 'string' ? img : (img.url || ''),
-                        caption: typeof img === 'object' ? (img.caption || null) : null
-                    })).filter(img => img.url)
+                    create: processedImages
                 }
             },
             include: {

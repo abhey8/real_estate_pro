@@ -62,6 +62,7 @@ export const getStatusLabel = (status) => {
     SOLD: 'Sold',
     RENTED: 'Rented',
     PENDING: 'Pending',
+    UNDER_NEGOTIATION: 'Under Negotiation',
   };
   return labels[status] || status;
 };
@@ -73,6 +74,7 @@ export const getStatusColor = (status) => {
     SOLD: 'var(--success-color)',
     RENTED: 'var(--warning-color)',
     PENDING: 'var(--warning-color)',
+    UNDER_NEGOTIATION: '#8b5cf6', // Violet/Purple for negotiation
   };
   return colors[status] || 'var(--text-secondary)';
 };

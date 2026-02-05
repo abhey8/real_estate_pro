@@ -12,8 +12,15 @@ router.get('/locations', listingController.getLocations);
 router.post('/compare', listingController.compareListings);
 router.get('/:id', listingController.getListingById);
 
+const upload = require('../middleware/upload');
+
 // Protected routes
-router.post('/', authenticateToken, [
+router.post('/', authenticateToken, upload.array('imageFiles', 5), (req, res, next) => {
+    console.log('--- Create Listing Request ---');
+    console.log('Body:', req.body);
+    console.log('Files:', req.files);
+    next();
+}, [
     body('title').trim().isLength({ min: 3 }).withMessage('Title must be at least 3 characters'),
     body('price').isFloat({ min: 0 }).withMessage('Price must be a positive number'),
     body('listingType').isIn(['BUY', 'SELL', 'RENT']).withMessage('Valid listing type required'),

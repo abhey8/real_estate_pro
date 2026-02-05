@@ -43,7 +43,7 @@ const Navbar = () => {
                 <Link to="/dashboard" onClick={() => setMenuOpen(false)}>
                   Dashboard
                 </Link>
-                <Link to="/listings/create" onClick={(e) => { setMenuOpen(false); handleCreateListing(e); }}>
+                <Link to="/listings/create" onClick={() => setMenuOpen(false)}>
                   Create Listing
                 </Link>
                 <Link to="/favorites" onClick={() => setMenuOpen(false)}>

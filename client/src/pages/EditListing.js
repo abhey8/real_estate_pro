@@ -127,7 +127,7 @@ const EditListing = () => {
         <form onSubmit={handleSubmit} className="form-container create-listing-form">
           <div className="form-section">
             <h2>Basic Information</h2>
-            
+
             <div className="form-group">
               <label htmlFor="title">Title <span className="required">*</span></label>
               <input
@@ -210,6 +210,7 @@ const EditListing = () => {
                   <option value="SOLD">Sold</option>
                   <option value="RENTED">Rented</option>
                   <option value="PENDING">Pending</option>
+                  <option value="UNDER_NEGOTIATION">Under Negotiation</option>
                 </select>
               </div>
             </div>

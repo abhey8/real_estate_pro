@@ -61,28 +61,44 @@ const CreateListing = () => {
     setAvailableAreas([]);
   };
 
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  const handleFileChange = (e) => {
+    setSelectedFiles(Array.from(e.target.files));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      const payload = {
-        ...formData,
-        price: parseFloat(formData.price),
-        bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
-        bathrooms: formData.bathrooms ? parseInt(formData.bathrooms) : null,
-        areaSqFt: formData.areaSqFt ? parseFloat(formData.areaSqFt) : null,
-        amenities: formData.amenities
-          ? formData.amenities.split(',').map((a) => a.trim()).filter((a) => a)
-          : [],
-        images: formData.images
-          ? formData.images.split('\n').map((url) => url.trim()).filter((url) => url)
-          : [],
-      };
+      const formDataToSend = new FormData();
 
-      const response = await api.post('/listings', payload);
-      
+      // Append text fields
+      Object.keys(formData).forEach(key => {
+        if (key !== 'images' && key !== 'amenities') {
+          formDataToSend.append(key, formData[key]);
+        }
+      });
+
+      // Append amenities as string or individual fields? Backend logic handles split string
+      if (formData.amenities) {
+        formDataToSend.append('amenities', formData.amenities);
+      }
+
+      // Append URL images (if any)
+      if (formData.images) {
+        formDataToSend.append('images', formData.images);
+      }
+
+      // Append Files
+      selectedFiles.forEach(file => {
+        formDataToSend.append('imageFiles', file);
+      });
+
+      const response = await api.post('/listings', formDataToSend);
+
       if (response.data && response.data.id) {
         navigate(`/listings/${response.data.id}`);
       } else {
@@ -91,8 +107,7 @@ const CreateListing = () => {
     } catch (error) {
       console.error('Error creating listing:', error);
       const errorDetails = error.response?.data;
-      
-      // Handle validation errors
+
       if (error.response?.status === 400 && errorDetails?.errors) {
         const validationErrors = errorDetails.errors.map(err => err.msg).join(', ');
         setError(`Validation Error: ${validationErrors}`);
@@ -100,9 +115,6 @@ const CreateListing = () => {
         const errorMessage = errorDetails?.details || errorDetails?.error || error.message || 'Failed to create listing';
         setError(errorMessage);
       }
-      
-      console.error('Full error response:', errorDetails);
-      console.error('Error status:', error.response?.status);
     } finally {
       setLoading(false);
     }
@@ -121,7 +133,7 @@ const CreateListing = () => {
         <form onSubmit={handleSubmit} className="form-container create-listing-form">
           <div className="form-section">
             <h2>Basic Information</h2>
-            
+
             <div className="form-group">
               <label htmlFor="title">Title <span className="required">*</span></label>
               <input
@@ -387,11 +399,23 @@ const CreateListing = () => {
                 value={formData.images}
                 onChange={handleChange}
                 rows="4"
-                className="textarea"
                 placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"
               />
             </div>
+
+            <div className="form-group">
+              <label htmlFor="imageFiles">Upload Images (Max 5)</label>
+              <input
+                type="file"
+                id="imageFiles"
+                onChange={handleFileChange}
+                multiple
+                accept="image/*"
+                className="input"
+              />
+            </div>
           </div>
+
 
           <div className="form-actions">
             <button
@@ -406,8 +430,8 @@ const CreateListing = () => {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 
