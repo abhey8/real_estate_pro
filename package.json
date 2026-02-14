@@ -5,7 +5,7 @@
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd server && npm run dev",
-    "client": "cd client && npm start",
+    "client": "cd client && PORT=3001 npm start",
     "install:all": "npm install && cd server && npm install && cd ../client && npm install",
     "prisma:migrate": "cd server && npx prisma migrate dev"
   },
