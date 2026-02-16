@@ -68,9 +68,9 @@ const Favorites = () => {
           <div className="listings-grid">
             {favorites.map((listing) => (
               <FavoriteCard
-                key={listing.id}
+                key={listing._id}
                 listing={listing}
-                onRemove={() => handleRemoveFavorite(listing.id)}
+                onRemove={() => handleRemoveFavorite(listing._id)}
               />
             ))}
           </div>
@@ -88,7 +88,7 @@ const FavoriteCard = ({ listing, onRemove }) => {
 
   return (
     <div className="favorite-card">
-      <Link to={`/listings/${listing.id}`} className="card-link">
+      <Link to={`/listings/${listing._id}`} className="card-link">
         <div className="listing-image-container">
           {imageUrl ? (
             <img src={imageUrl} alt={listing.title} className="listing-image" />

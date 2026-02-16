@@ -99,7 +99,10 @@ const CreateListing = () => {
 
       const response = await api.post('/listings', formDataToSend);
 
-      if (response.data && response.data.id) {
+      if (response.data && response.data._id) {
+        alert('Listing created successfully!');
+        navigate(`/listings/${response.data._id}`);
+      } else if (response.data && response.data.id) {
         navigate(`/listings/${response.data.id}`);
       } else {
         throw new Error('Invalid response from server');

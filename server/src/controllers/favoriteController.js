@@ -1,31 +1,30 @@
-const prisma = require('../config/db');
+const Favorite = require('../models/Favorite');
+const Listing = require('../models/Listing');
 
 const addFavorite = async (req, res) => {
     try {
-        const listingId = parseInt(req.params.listingId);
+        const listingId = req.params.listingId;
 
-        // Check if listing exists
-        const listing = await prisma.listing.findUnique({
-            where: { id: listingId }
-        });
+        const listing = await Listing.findById(listingId);
 
         if (!listing) {
             return res.status(404).json({ error: 'Listing not found' });
         }
 
-        // Create or find favorite
-        const favorite = await prisma.favorite.upsert({
-            where: {
-                userId_listingId: {
-                    userId: req.user.id,
-                    listingId: listingId
-                }
-            },
-            update: {},
-            create: {
-                userId: req.user.id,
-                listingId: listingId
-            }
+        // Check if already favorites
+        const existingFavorite = await Favorite.findOne({
+            user: req.user._id,
+            listing: listingId
+        });
+
+        if (existingFavorite) {
+            return res.status(400).json({ error: 'Listing already in favorites' });
+        }
+
+        // Create favorite
+        const favorite = await Favorite.create({
+            user: req.user._id,
+            listing: listingId
         });
 
         res.status(201).json({ favorite });
@@ -37,13 +36,11 @@ const addFavorite = async (req, res) => {
 
 const removeFavorite = async (req, res) => {
     try {
-        const listingId = parseInt(req.params.listingId);
+        const listingId = req.params.listingId;
 
-        await prisma.favorite.deleteMany({
-            where: {
-                userId: req.user.id,
-                listingId: listingId
-            }
+        await Favorite.deleteMany({
+            user: req.user._id,
+            listing: listingId
         });
 
         res.json({ message: 'Favorite removed' });
@@ -55,27 +52,15 @@ const removeFavorite = async (req, res) => {
 
 const getFavorites = async (req, res) => {
     try {
-        const favorites = await prisma.favorite.findMany({
-            where: { userId: req.user.id },
-            include: {
-                listing: {
-                    include: {
-                        images: true,
-                        owner: {
-                            select: {
-                                id: true,
-                                name: true,
-                                email: true,
-                                phone: true
-                            }
-                        }
-                    }
+        const favorites = await Favorite.find({ user: req.user._id })
+            .populate({
+                path: 'listing',
+                populate: {
+                    path: 'owner',
+                    select: 'name email phone'
                 }
-            },
-            orderBy: {
-                createdAt: 'desc'
-            }
-        });
+            })
+            .sort({ createdAt: -1 });
 
         res.json({ favorites });
     } catch (error) {

@@ -1,24 +1,18 @@
-const prisma = require('../config/db');
+const User = require('../models/User');
 
-const getUserListings = async (req, res) => {
+const getProfile = async (req, res) => {
     try {
-        const userId = req.user.id; // From auth middleware
-
-        const listings = await prisma.listing.findMany({
-            where: { ownerId: userId },
-            include: {
-                images: true
-            },
-            orderBy: { createdAt: 'desc' }
-        });
-
-        res.json({ listings });
+        const user = await User.findById(req.user._id).select('-password');
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.json({ user });
     } catch (error) {
-        console.error('Error fetching user listings:', error);
-        res.status(500).json({ error: 'Failed to fetch listings' });
+        console.error('Error fetching profile:', error);
+        res.status(500).json({ error: 'Failed to fetch profile' });
     }
 };
 
 module.exports = {
-    getUserListings
+    getProfile
 };

@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const db = require('./config/db');
+const connectDB = require('./config/db');
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
@@ -13,6 +13,9 @@ const loanRoutes = require('./routes/loanRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Connect to Database
+connectDB();
 
 // Middleware
 app.use(cors());
@@ -41,15 +44,6 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(clientBuildPath, 'index.html'));
 });
 
-// Test DB Connection
-db.$connect()
-    .then(() => {
-        console.log('Connected to Database');
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-        });
-    })
-    .catch((err) => {
-        console.error('Failed to connect to database', err);
-        process.exit(1);
-    });
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});

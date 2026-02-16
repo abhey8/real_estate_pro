@@ -1,4 +1,6 @@
-const prisma = require('../config/db');
+const Listing = require('../models/Listing');
+const User = require('../models/User');
+const Favorite = require('../models/Favorite');
 
 const getAllListings = async (req, res) => {
     try {
@@ -17,71 +19,55 @@ const getAllListings = async (req, res) => {
             search
         } = req.query;
 
-        const where = {
-            status: status
-        };
+        const query = { status };
 
         if (search) {
-            where.OR = [
-                { title: { contains: search } }, // MySQL is case-insensitive by default with standard collation
-                { description: { contains: search } },
-                { city: { contains: search } },
-                { state: { contains: search } },
-                { address: { contains: search } }
+            query.$or = [
+                { title: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } },
+                { city: { $regex: search, $options: 'i' } },
+                { state: { $regex: search, $options: 'i' } },
+                { address: { $regex: search, $options: 'i' } }
             ];
         }
 
         if (minPrice || maxPrice) {
-            where.price = {};
-            if (minPrice) where.price.gte = parseFloat(minPrice);
-            if (maxPrice) where.price.lte = parseFloat(maxPrice);
+            query.price = {};
+            if (minPrice) query.price.$gte = parseFloat(minPrice);
+            if (maxPrice) query.price.$lte = parseFloat(maxPrice);
         }
 
         if (propertyType) {
-            where.propertyType = propertyType;
+            query.propertyType = propertyType;
         }
 
         if (listingType) {
-            where.listingType = listingType;
+            query.listingType = listingType;
         }
 
-        if (city && !search) { // Only apply specific city filter if not searching generally
-            where.city = { contains: city };
+        if (city && !search) {
+            query.city = { $regex: city, $options: 'i' };
         }
 
-        if (state && !search) { // Only apply specific state filter if not searching generally
-            where.state = { contains: state };
+        if (state && !search) {
+            query.state = { $regex: state, $options: 'i' };
         }
 
         if (bedrooms) {
-            where.bedrooms = { gte: parseInt(bedrooms) };
+            query.bedrooms = { $gte: parseInt(bedrooms) };
         }
 
         if (userId) {
-            where.ownerId = parseInt(userId);
+            query.owner = userId;
         }
 
-        const listings = await prisma.listing.findMany({
-            where,
-            include: {
-                images: true,
-                owner: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        phone: true
-                    }
-                }
-            },
-            orderBy: {
-                createdAt: 'desc'
-            },
-            take: parseInt(limit),
-            skip: parseInt(skip)
-        });
+        const listings = await Listing.find(query)
+            .populate('owner', 'name email phone')
+            .sort({ createdAt: -1 })
+            .limit(parseInt(limit))
+            .skip(parseInt(skip));
 
-        const total = await prisma.listing.count({ where });
+        const total = await Listing.countDocuments(query);
 
         res.json({
             listings,
@@ -97,20 +83,8 @@ const getAllListings = async (req, res) => {
 
 const getListingById = async (req, res) => {
     try {
-        const listing = await prisma.listing.findUnique({
-            where: { id: parseInt(req.params.id) },
-            include: {
-                images: true,
-                owner: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        phone: true
-                    }
-                }
-            }
-        });
+        const listing = await Listing.findById(req.params.id)
+            .populate('owner', 'name email phone');
 
         if (!listing) {
             return res.status(404).json({ error: 'Listing not found' });
@@ -152,98 +126,72 @@ const createListing = async (req, res) => {
         // Handle URL images
         if (images) {
             const urlImages = Array.isArray(images) ? images : images.split('\n');
-            processedImages = urlImages.map(url => ({ url: typeof url === 'string' ? url.trim() : url.url })).filter(img => img.url);
+            processedImages = urlImages.map(url => ({
+                url: typeof url === 'string' ? url.trim() : url.url
+            })).filter(img => img.url);
         }
 
         // Handle Uploaded Files
-        if (req.files && req.files.length > 0) {
+        if (req.files && Array.isArray(req.files) && req.files.length > 0) {
             const uploadedImages = req.files.map(file => ({
                 url: `${req.protocol}://${req.get('host')}/uploads/${file.filename}`
             }));
             processedImages = [...processedImages, ...uploadedImages];
+        } else if (req.file) {
+            // Handle single file case if ever needed
+            processedImages.push({
+                url: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
+            });
         }
 
-        const listing = await prisma.listing.create({
-            data: {
-                title,
-                description: description || null,
-                price: parseFloat(price), // Convert to number
-                currency: currency || 'INR',
-                listingType,
-                bedrooms: bedrooms ? parseInt(bedrooms) : null,
-                bathrooms: bathrooms ? parseInt(bathrooms) : null,
-                areaSqFt: areaSqFt ? parseFloat(areaSqFt) : null,
-                propertyType,
-                address,
-                city,
-                state,
-                area: area || null,
-                country,
-                zipCode: zipCode || null,
-                latitude: latitude ? parseFloat(latitude) : null,
-                longitude: longitude ? parseFloat(longitude) : null,
-                amenities: Array.isArray(amenities) ? amenities : (typeof amenities === 'string' ? amenities.split(',').map(a => a.trim()).filter(a => a) : []),
-                ownerId: req.user.id,
-                images: {
-                    create: processedImages
-                }
-            },
-            include: {
-                images: true,
-                owner: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        phone: true
-                    }
-                }
-            }
+        const listing = await Listing.create({
+            title,
+            description: description || null,
+            price: parseFloat(price),
+            currency: currency || 'INR',
+            listingType,
+            bedrooms: bedrooms ? parseInt(bedrooms) : undefined,
+            bathrooms: bathrooms ? parseInt(bathrooms) : undefined,
+            areaSqFt: areaSqFt ? parseFloat(areaSqFt) : undefined,
+            propertyType,
+            address,
+            city,
+            state,
+            area: area || null,
+            country,
+            zipCode: zipCode || null,
+            latitude: latitude ? parseFloat(latitude) : undefined,
+            longitude: longitude ? parseFloat(longitude) : undefined,
+            amenities: Array.isArray(amenities) ? amenities : (typeof amenities === 'string' ? amenities.split(',').map(a => a.trim()).filter(a => a) : []),
+            owner: req.user._id,
+            images: processedImages
         });
+
+        // Populate owner manually or refetch
+        await listing.populate('owner', 'name email phone');
 
         res.status(201).json(listing);
     } catch (error) {
         console.error('Error creating listing:', error);
-
-        // Handle Prisma validation errors
-        if (error.code === 'P2002') {
-            return res.status(400).json({
-                error: 'Validation error',
-                details: 'A unique constraint violation occurred'
-            });
-        }
-
-        // Handle Prisma field validation errors
-        if (error.meta) {
-            return res.status(400).json({
-                error: 'Validation error',
-                details: error.meta.message || error.message
-            });
-        }
-
-        // Return more detailed error message
-        const errorMessage = error.message || 'Failed to create listing';
         res.status(500).json({
             error: 'Failed to create listing',
-            details: errorMessage
+            details: error.message
         });
     }
 };
 
 const updateListing = async (req, res) => {
     try {
-        const listingId = parseInt(req.params.id);
+        const listingId = req.params.id;
 
-        // Check if listing exists and user is owner
-        const existingListing = await prisma.listing.findUnique({
-            where: { id: listingId }
-        });
+        const listing = await Listing.findById(listingId);
 
-        if (!existingListing) {
+        if (!listing) {
             return res.status(404).json({ error: 'Listing not found' });
         }
 
-        if (existingListing.ownerId !== req.user.id && req.user.role !== 'ADMIN') {
+        // Check ownership (using .toString() for ObjectId comparison)
+        if (listing.owner.toString() !== req.user._id.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({ error: 'Not authorized to update this listing' });
         }
 
@@ -271,36 +219,26 @@ const updateListing = async (req, res) => {
         if (description !== undefined) updateData.description = description;
         if (price !== undefined) updateData.price = parseFloat(price);
         if (listingType !== undefined) updateData.listingType = listingType;
-        if (bedrooms !== undefined) updateData.bedrooms = bedrooms ? parseInt(bedrooms) : null;
-        if (bathrooms !== undefined) updateData.bathrooms = bathrooms ? parseInt(bathrooms) : null;
-        if (areaSqFt !== undefined) updateData.areaSqFt = areaSqFt ? parseFloat(areaSqFt) : null;
+        if (bedrooms !== undefined) updateData.bedrooms = bedrooms ? parseInt(bedrooms) : undefined;
+        if (bathrooms !== undefined) updateData.bathrooms = bathrooms ? parseInt(bathrooms) : undefined;
+        if (areaSqFt !== undefined) updateData.areaSqFt = areaSqFt ? parseFloat(areaSqFt) : undefined;
         if (propertyType !== undefined) updateData.propertyType = propertyType;
         if (status !== undefined) updateData.status = status;
         if (address !== undefined) updateData.address = address;
         if (city !== undefined) updateData.city = city;
         if (state !== undefined) updateData.state = state;
         if (zipCode !== undefined) updateData.zipCode = zipCode || null;
-        if (latitude !== undefined) updateData.latitude = latitude ? parseFloat(latitude) : null;
-        if (longitude !== undefined) updateData.longitude = longitude ? parseFloat(longitude) : null;
+        if (latitude !== undefined) updateData.latitude = latitude ? parseFloat(latitude) : undefined;
+        if (longitude !== undefined) updateData.longitude = longitude ? parseFloat(longitude) : undefined;
         if (amenities !== undefined) updateData.amenities = Array.isArray(amenities) ? amenities : [];
 
-        const listing = await prisma.listing.update({
-            where: { id: listingId },
-            data: updateData,
-            include: {
-                images: true,
-                owner: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        phone: true
-                    }
-                }
-            }
-        });
+        const updatedListing = await Listing.findByIdAndUpdate(
+            listingId,
+            updateData,
+            { new: true, runValidators: true }
+        ).populate('owner', 'name email phone');
 
-        res.json(listing);
+        res.json(updatedListing);
     } catch (error) {
         console.error('Error updating listing:', error);
         res.status(500).json({ error: 'Failed to update listing' });
@@ -309,23 +247,19 @@ const updateListing = async (req, res) => {
 
 const deleteListing = async (req, res) => {
     try {
-        const listingId = parseInt(req.params.id);
+        const listingId = req.params.id;
 
-        const existingListing = await prisma.listing.findUnique({
-            where: { id: listingId }
-        });
+        const listing = await Listing.findById(listingId);
 
-        if (!existingListing) {
+        if (!listing) {
             return res.status(404).json({ error: 'Listing not found' });
         }
 
-        if (existingListing.ownerId !== req.user.id && req.user.role !== 'ADMIN') {
+        if (listing.owner.toString() !== req.user._id.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({ error: 'Not authorized to delete this listing' });
         }
 
-        await prisma.listing.delete({
-            where: { id: listingId }
-        });
+        await Listing.findByIdAndDelete(listingId);
 
         res.json({ message: 'Listing deleted successfully' });
     } catch (error) {
@@ -336,15 +270,8 @@ const deleteListing = async (req, res) => {
 
 const getUserListings = async (req, res) => {
     try {
-        const listings = await prisma.listing.findMany({
-            where: { ownerId: req.user.id },
-            include: {
-                images: true
-            },
-            orderBy: {
-                createdAt: 'desc'
-            }
-        });
+        const listings = await Listing.find({ owner: req.user._id })
+            .sort({ createdAt: -1 });
 
         res.json({ listings });
     } catch (error) {
@@ -357,44 +284,23 @@ const getRecommendations = async (req, res) => {
     try {
         const { limit = 10 } = req.query;
 
-        // Get user's favorite property types and locations
-        const userFavorites = await prisma.favorite.findMany({
-            where: { userId: req.user.id },
-            include: {
-                listing: true
-            }
-        });
+        // Get user's favorite property types
+        const userFavorites = await Favorite.find({ user: req.user._id }).populate('listing');
+        const favoritePropertyTypes = [...new Set(userFavorites.map(f => f.listing ? f.listing.propertyType : null).filter(Boolean))];
 
-        const favoritePropertyTypes = [...new Set(userFavorites.map(f => f.listing.propertyType))];
-
-        // Get recommendations based on preferences
-        const where = {
+        const query = {
             status: 'ACTIVE',
-            ownerId: { not: req.user.id } // Exclude user's own listings
+            owner: { $ne: req.user._id }
         };
 
         if (favoritePropertyTypes.length > 0) {
-            where.propertyType = { in: favoritePropertyTypes };
+            query.propertyType = { $in: favoritePropertyTypes };
         }
 
-        const recommendations = await prisma.listing.findMany({
-            where,
-            include: {
-                images: true,
-                owner: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        phone: true
-                    }
-                }
-            },
-            orderBy: {
-                createdAt: 'desc'
-            },
-            take: parseInt(limit)
-        });
+        const recommendations = await Listing.find(query)
+            .populate('owner', 'name email phone')
+            .sort({ createdAt: -1 })
+            .limit(parseInt(limit));
 
         res.json({ recommendations });
     } catch (error) {
@@ -411,22 +317,9 @@ const compareListings = async (req, res) => {
             return res.status(400).json({ error: 'At least 2 listing IDs required' });
         }
 
-        const listings = await prisma.listing.findMany({
-            where: {
-                id: { in: listingIds.map(id => parseInt(id)) }
-            },
-            include: {
-                images: true,
-                owner: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        phone: true
-                    }
-                }
-            }
-        });
+        const listings = await Listing.find({
+            _id: { $in: listingIds }
+        }).populate('owner', 'name email phone');
 
         res.json({ listings });
     } catch (error) {
@@ -437,19 +330,12 @@ const compareListings = async (req, res) => {
 
 const getLocations = async (req, res) => {
     try {
-        const cities = await prisma.listing.findMany({
-            select: { city: true },
-            distinct: ['city']
-        });
-
-        const states = await prisma.listing.findMany({
-            select: { state: true },
-            distinct: ['state']
-        });
+        const cities = await Listing.distinct('city');
+        const states = await Listing.distinct('state');
 
         res.json({
-            cities: cities.map(c => c.city).sort(),
-            states: states.map(s => s.state).sort()
+            cities: cities.filter(Boolean).sort(),
+            states: states.filter(Boolean).sort()
         });
     } catch (error) {
         console.error('Error fetching locations:', error);

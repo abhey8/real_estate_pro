@@ -96,17 +96,17 @@ const Compare = () => {
 
           <div className="listings-selector">
             {allListings.slice(0, 20).map((listing) => {
-              const isSelected = selectedIds.includes(listing.id);
+              const isSelected = selectedIds.includes(listing._id);
               return (
                 <div
-                  key={listing.id}
+                  key={listing._id}
                   className={`selector-card ${isSelected ? 'selected' : ''}`}
-                  onClick={() => handleAddListing(listing.id)}
+                  onClick={() => handleAddListing(listing._id)}
                 >
                   <input
                     type="checkbox"
                     checked={isSelected}
-                    onChange={() => handleAddListing(listing.id)}
+                    onChange={() => handleAddListing(listing._id)}
                   />
                   <div className="selector-content">
                     <h4>{listing.title}</h4>
@@ -128,8 +128,8 @@ const Compare = () => {
                   <tr>
                     <th>Property</th>
                     {listings.map((listing) => (
-                      <th key={listing.id}>
-                        <Link to={`/listings/${listing.id}`}>
+                      <th key={listing._id}>
+                        <Link to={`/listings/${listing._id}`}>
                           {listing.title}
                         </Link>
                       </th>
@@ -140,7 +140,7 @@ const Compare = () => {
                   <tr>
                     <td><strong>Price</strong></td>
                     {listings.map((listing) => (
-                      <td key={listing.id}>
+                      <td key={listing._id}>
                         {formatPrice(listing.price, listing.currency)}
                       </td>
                     ))}
@@ -148,7 +148,7 @@ const Compare = () => {
                   <tr>
                     <td><strong>Type</strong></td>
                     {listings.map((listing) => (
-                      <td key={listing.id}>
+                      <td key={listing._id}>
                         {getPropertyTypeLabel(listing.propertyType)}
                       </td>
                     ))}
@@ -156,7 +156,7 @@ const Compare = () => {
                   <tr>
                     <td><strong>Listing Type</strong></td>
                     {listings.map((listing) => (
-                      <td key={listing.id}>
+                      <td key={listing._id}>
                         {getListingTypeLabel(listing.listingType)}
                       </td>
                     ))}
@@ -164,7 +164,7 @@ const Compare = () => {
                   <tr>
                     <td><strong>Location</strong></td>
                     {listings.map((listing) => (
-                      <td key={listing.id}>
+                      <td key={listing._id}>
                         {listing.city}, {listing.state}
                       </td>
                     ))}
@@ -173,7 +173,7 @@ const Compare = () => {
                     <tr>
                       <td><strong>Bedrooms</strong></td>
                       {listings.map((listing) => (
-                        <td key={listing.id}>
+                        <td key={listing._id}>
                           {listing.bedrooms || 'N/A'}
                         </td>
                       ))}
@@ -183,7 +183,7 @@ const Compare = () => {
                     <tr>
                       <td><strong>Bathrooms</strong></td>
                       {listings.map((listing) => (
-                        <td key={listing.id}>
+                        <td key={listing._id}>
                           {listing.bathrooms || 'N/A'}
                         </td>
                       ))}
@@ -193,7 +193,7 @@ const Compare = () => {
                     <tr>
                       <td><strong>Area (sq ft)</strong></td>
                       {listings.map((listing) => (
-                        <td key={listing.id}>
+                        <td key={listing._id}>
                           {listing.areaSqFt ? formatArea(listing.areaSqFt) : 'N/A'}
                         </td>
                       ))}
@@ -202,7 +202,7 @@ const Compare = () => {
                   <tr>
                     <td><strong>Status</strong></td>
                     {listings.map((listing) => (
-                      <td key={listing.id}>
+                      <td key={listing._id}>
                         {listing.status}
                       </td>
                     ))}

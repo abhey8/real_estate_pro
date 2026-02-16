@@ -8,7 +8,6 @@ import {
   formatArea,
   getListingTypeLabel,
   getPropertyTypeLabel,
-  getStatusLabel,
 } from '../utils/helpers';
 import './ListingDetail.css';
 
@@ -45,13 +44,15 @@ const ListingDetail = () => {
     try {
       const response = await api.get('/favorites');
       const favorites = response.data.favorites;
-      setIsFavorite(favorites.some((f) => f.listingId === parseInt(id)));
+      // Depending on backend, favorites might be objects with listingId or populated listings
+      // Assuming simple checking for now
+      setIsFavorite(favorites.some((f) => f.listingId === id || f.listing === id || f._id === id));
     } catch (error) {
       console.error('Error checking favorite:', error);
     }
   };
 
-  const handleFavorite = async () => {
+  const toggleFavorite = async () => {
     if (!isAuthenticated) {
       navigate('/login');
       return;
@@ -68,200 +69,143 @@ const ListingDetail = () => {
       }
     } catch (error) {
       console.error('Error updating favorite:', error);
-      alert('Failed to update favorite');
     } finally {
       setFavoriteLoading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="page-container">
-        <div className="container">
-          <div className="loading">
-            <p>Loading property details...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!listing) {
-    return (
-      <div className="page-container">
-        <div className="container">
-          <div className="error">
-            <p>Property not found</p>
-            <Link to="/" className="btn btn-primary">
-              Go Back Home
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <div className="loading-state" style={{ padding: '4rem', textAlign: 'center' }}>Loading...</div>;
+  if (!listing) return <div className="error-state" style={{ padding: '4rem', textAlign: 'center' }}>Property not found.</div>;
 
   return (
-    <div className="page-container">
-      {listing && (
-        <Helmet>
-          <title>{listing.title} | RealEstate Pro</title>
-          <meta name="description" content={`Check out this ${listing.propertyType.toLowerCase()} in ${listing.city}. ${listing.bedrooms} Beds, ${listing.bathrooms} Baths. Price: ${formatPrice(listing.price, listing.currency)}.`} />
-        </Helmet>
-      )}
-      <div className="container">
-        <Link to="/" className="back-link">
-          ← Back to Listings
-        </Link>
+    <div className="listing-detail-page">
+      <Helmet>
+        <title>{listing.title} | RealEstate Pro</title>
+      </Helmet>
 
-        <div className="listing-detail">
-          <div className="listing-images">
-            {listing.images && listing.images.length > 0 ? (
-              <div className="image-gallery">
-                {listing.images.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image.url}
-                    alt={image.caption || listing.title}
-                    className="detail-image"
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="no-image-large">🏠</div>
-            )}
+      {/* Image Gallery */}
+      <div className="listing-gallery-header">
+        <div className="container">
+          <div className="gallery-grid">
+            <div className="main-image-container">
+              <img
+                src={listing.images?.[0]?.url || 'https://via.placeholder.com/800x600'}
+                alt={listing.title}
+                className="main-image"
+              />
+            </div>
+            <div className="secondary-images">
+              {listing.images?.slice(1, 3).map((img, idx) => (
+                <div key={idx} className="secondary-image-container">
+                  <img src={img.url} alt={`${listing.title} view ${idx + 2}`} />
+                </div>
+              ))}
+              {(!listing.images || listing.images.length < 2) && (
+                <div className="secondary-image-container" style={{ background: '#e2e8f0' }}></div>
+              )}
+              {(!listing.images || listing.images.length < 3) && (
+                <div className="secondary-image-container" style={{ background: '#cbd5e1' }}></div>
+              )}
+            </div>
           </div>
+        </div>
+      </div>
 
-          <div className="listing-info">
-            <div className="listing-header">
-              <div>
-                <div className="listing-badges">
-                  <span className="type-badge">
-                    {getListingTypeLabel(listing.listingType)}
-                  </span>
-                  <span className="status-badge">{getStatusLabel(listing.status)}</span>
-                </div>
-                <h1>{listing.title}</h1>
-                <div className="listing-location">
-                  📍 {listing.address}, {listing.city}, {listing.state}
-                </div>
-              </div>
-              <div className="listing-actions">
-                <button
-                  onClick={handleFavorite}
-                  disabled={favoriteLoading}
-                  className={`btn ${isFavorite ? 'btn-danger' : 'btn-outline-primary'}`}
-                >
-                  {isFavorite ? '❤️ Remove Favorite' : '🤍 Add to Favorites'}
-                </button>
-                {isAuthenticated && (
-                  <button
-                    onClick={() => alert('Feature in Development: Loan applications are coming soon!')}
-                    className="btn btn-success"
-                  >
-                    💰 Apply for Loan
-                  </button>
-                )}
-                <Link
-                  to="/compare"
-                  state={{ listingIds: [listing.id] }}
-                  className="btn btn-outline-primary"
-                >
-                  📊 Compare
-                </Link>
-              </div>
+      <div className="container listing-content-layout">
+        <div className="listing-main-info">
+
+          <div className="listing-header-block">
+            <div className="header-top">
+              <span className="listing-type-tag">{getListingTypeLabel(listing.listingType)}</span>
+              <span className="property-type-tag">{getPropertyTypeLabel(listing.propertyType)}</span>
+            </div>
+
+            <h1 className="listing-title-large">{listing.title}</h1>
+
+            <div className="listing-location-large">
+              📍 {listing.address}, {listing.city}, {listing.state} {listing.zipCode}
             </div>
 
             <div className="listing-price-large">
               {formatPrice(listing.price, listing.currency)}
+              {listing.listingType === 'RENT' && <span className="period" style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 400 }}>/mo</span>}
             </div>
 
-            <div className="listing-specs">
-              {listing.bedrooms && (
-                <div className="spec-item">
-                  <div className="spec-label">Bedrooms</div>
-                  <div className="spec-value">{listing.bedrooms}</div>
+            <div className="listing-stats-bar">
+              {listing.bedrooms > 0 && (
+                <div className="stat-item">
+                  <span className="stat-value">{listing.bedrooms}</span>
+                  <span className="stat-label">Beds</span>
                 </div>
               )}
-              {listing.bathrooms && (
-                <div className="spec-item">
-                  <div className="spec-label">Bathrooms</div>
-                  <div className="spec-value">{listing.bathrooms}</div>
+              {listing.bedrooms > 0 && <div className="stat-divider"></div>}
+
+              {listing.bathrooms > 0 && (
+                <div className="stat-item">
+                  <span className="stat-value">{listing.bathrooms}</span>
+                  <span className="stat-label">Baths</span>
                 </div>
               )}
-              {listing.areaSqFt && (
-                <div className="spec-item">
-                  <div className="spec-label">Area</div>
-                  <div className="spec-value">{formatArea(listing.areaSqFt)} sq ft</div>
+              {listing.bathrooms > 0 && <div className="stat-divider"></div>}
+
+              {listing.areaSqFt > 0 && (
+                <div className="stat-item">
+                  <span className="stat-value">{formatArea(listing.areaSqFt)}</span>
+                  <span className="stat-label">Sq Ft</span>
                 </div>
               )}
-              <div className="spec-item">
-                <div className="spec-label">Property Type</div>
-                <div className="spec-value">{getPropertyTypeLabel(listing.propertyType)}</div>
+            </div>
+          </div>
+
+          {listing.description && (
+            <div className="content-block">
+              <h3>Description</h3>
+              <p className="listing-description">
+                {listing.description}
+              </p>
+            </div>
+          )}
+
+          {listing.amenities && listing.amenities.length > 0 && (
+            <div className="content-block">
+              <h3>Amenities</h3>
+              <div className="amenities-grid">
+                {listing.amenities.map((amenity, idx) => (
+                  <div key={idx} className="amenity-item">
+                    ✅ {amenity}
+                  </div>
+                ))}
               </div>
             </div>
+          )}
 
-            {listing.description && (
-              <div className="listing-description">
-                <h3>Description</h3>
-                <p>{listing.description}</p>
+        </div>
+
+        {/* Sidebar */}
+        <div className="listing-sidebar">
+          <div className="contact-card">
+            <h3>Interested in this property?</h3>
+            <p style={{ marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>Contact the seller to schedule a viewing or ask questions.</p>
+
+            {!showContact ? (
+              <button onClick={() => setShowContact(true)} className="btn btn-primary btn-full-width">
+                Contact Seller
+              </button>
+            ) : (
+              <div className="contact-info-card" style={{ background: 'var(--bg-secondary)', padding: '1rem', borderRadius: 'var(--radius-md)' }}>
+                <div style={{ marginBottom: '0.5rem' }}><strong>Name:</strong> {listing.owner?.name || 'Seller'}</div>
+                <div style={{ marginBottom: '0.5rem' }}><strong>Email:</strong> {listing.owner?.email || 'N/A'}</div>
               </div>
             )}
 
-            {listing.amenities && listing.amenities.length > 0 && (
-              <div className="listing-amenities">
-                <h3>Amenities</h3>
-                <div className="amenities-grid">
-                  {listing.amenities.map((amenity, index) => (
-                    <span key={index} className="amenity-badge">
-                      {amenity}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {listing.owner && (
-              <div className="listing-contact">
-                <h3>Contact Owner</h3>
-
-                {!showContact ? (
-                  <div className="contact-actions">
-                    <button onClick={() => setShowContact(true)} className="btn btn-primary btn-lg">
-                      📞 Contact Seller
-                    </button>
-                    <button onClick={() => alert('Proposal feature in development!')} className="btn btn-outline-primary btn-lg" style={{ marginLeft: '1rem' }}>
-                      💬 Make an Offer
-                    </button>
-                  </div>
-                ) : (
-                  <div className="contact-info-card">
-                    <div className="contact-item">
-                      <strong>Name:</strong> {listing.owner.name}
-                    </div>
-                    {listing.owner.email && (
-                      <div className="contact-item">
-                        <strong>Email:</strong>{' '}
-                        <a href={`mailto:${listing.owner.email}`}>
-                          {listing.owner.email}
-                        </a>
-                      </div>
-                    )}
-                    {listing.owner.phone && (
-                      <div className="contact-item">
-                        <strong>Phone:</strong>{' '}
-                        <a href={`tel:${listing.owner.phone}`}>
-                          {listing.owner.phone}
-                        </a>
-                      </div>
-                    )}
-                    <div className="contact-note">
-                      <small>Mention <strong>RealEstate Pro</strong> when you contact the seller.</small>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+            <button
+              className={`btn btn-secondary btn-full-width ${isFavorite ? 'active' : ''}`}
+              onClick={toggleFavorite}
+              disabled={favoriteLoading}
+              style={{ marginTop: '0.75rem' }}
+            >
+              {isFavorite ? '❤️ Saved' : '🤍 Save to Favorites'}
+            </button>
           </div>
         </div>
       </div>
@@ -270,4 +214,3 @@ const ListingDetail = () => {
 };
 
 export default ListingDetail;
-

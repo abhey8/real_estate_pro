@@ -1,4 +1,4 @@
-const prisma = require('../config/db');
+const LoanApplication = require('../models/LoanApplication');
 
 const applyForLoan = async (req, res) => {
     try {
@@ -15,21 +15,19 @@ const applyForLoan = async (req, res) => {
             address
         } = req.body;
 
-        const loanApplication = await prisma.loanApplication.create({
-            data: {
-                userId: req.user.id,
-                listingId: listingId ? parseInt(listingId) : null,
-                loanAmount: parseFloat(loanAmount),
-                tenure: parseInt(tenure),
-                purpose,
-                employment,
-                annualIncome: parseFloat(annualIncome),
-                name,
-                email,
-                phone,
-                address,
-                status: 'PENDING'
-            }
+        const loanApplication = await LoanApplication.create({
+            user: req.user._id,
+            listing: listingId || null,
+            loanAmount: parseFloat(loanAmount),
+            tenure: parseInt(tenure),
+            purpose,
+            employment,
+            annualIncome: parseFloat(annualIncome),
+            name,
+            email,
+            phone,
+            address,
+            status: 'PENDING'
         });
 
         res.status(201).json({ loanApplication });
@@ -41,17 +39,9 @@ const applyForLoan = async (req, res) => {
 
 const getLoans = async (req, res) => {
     try {
-        const loans = await prisma.loanApplication.findMany({
-            where: { userId: req.user.id },
-            include: {
-                listing: {
-                    include: {
-                        images: true
-                    }
-                }
-            },
-            orderBy: { createdAt: 'desc' }
-        });
+        const loans = await LoanApplication.find({ user: req.user._id })
+            .populate('listing')
+            .sort({ createdAt: -1 });
 
         res.json({ loans });
     } catch (error) {
