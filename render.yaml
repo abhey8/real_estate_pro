@@ -1,8 +1,8 @@
 services:
   - type: web
-    name: real-estate-backend
+    name: real-estate-platform
     env: node
-    buildCommand: cd server && npm install && npx prisma generate
+    buildCommand: npm install && npm run build
     startCommand: cd server && npm start
     envVars:
       - key: DATABASE_URL
