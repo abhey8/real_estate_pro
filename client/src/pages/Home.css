@@ -1,4 +1,4 @@
-/* Home.css - Minimal page specific overrides */
+
 
 .filter-label {
   display: block;
@@ -8,11 +8,9 @@
   color: var(--text-secondary);
 }
 
-.filter-group {
-    /* No margin needed as stack uses gap */
-}
+.filter-group 
 
-/* Ensure smooth transitions for the hero contents if they animate */
+
 .hero-title, .hero-subtitle, .hero-search-form {
   will-change: transform, opacity;
 }

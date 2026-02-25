@@ -4,10 +4,10 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || (window.location.hostname 
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  // Let axios set the Content-Type automatically (needed for FormData)
+  
 });
 
-// Add token to requests
+
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -22,7 +22,7 @@ api.interceptors.request.use(
   }
 );
 
-// Handle token expiration
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -33,7 +33,7 @@ api.interceptors.response.use(
       !error.config.url.includes('/listings')
     ) {
       console.error('Unauthorized access at:', error.config?.url);
-      // alert('Auth Error: ' + error.response.status + ' at ' + error.config.url);
+      
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
 
-// Components
+
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -18,7 +18,7 @@ import LoanApplication from './pages/LoanApplication';
 import Compare from './pages/Compare';
 import Profile from './pages/Profile';
 
-// Protected Route Component
+
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
@@ -33,7 +33,7 @@ const ProtectedRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
-// Public Route Component (redirect if authenticated)
+
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 

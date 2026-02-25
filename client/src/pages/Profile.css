@@ -63,7 +63,6 @@
   color: var(--text-primary);
 }
 
-/* Dark Mode Adaptation */
 body.dark-mode .profile-header {
   background: var(--surface-color);
   border-color: var(--border-color);

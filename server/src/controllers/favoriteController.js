@@ -11,7 +11,7 @@ const addFavorite = async (req, res) => {
             return res.status(404).json({ error: 'Listing not found' });
         }
 
-        // Check if already favorites
+        
         const existingFavorite = await Favorite.findOne({
             user: req.user._id,
             listing: listingId
@@ -21,7 +21,7 @@ const addFavorite = async (req, res) => {
             return res.status(400).json({ error: 'Listing already in favorites' });
         }
 
-        // Create favorite
+        
         const favorite = await Favorite.create({
             user: req.user._id,
             listing: listingId

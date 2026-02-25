@@ -57,7 +57,7 @@ const listingSchema = new mongoose.Schema({
         type: String,
         default: 'ACTIVE'
     },
-    amenities: [String], // Array of strings for amenities
+    amenities: [String], 
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

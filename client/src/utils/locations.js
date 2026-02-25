@@ -1,4 +1,4 @@
-// Indian States and Cities Data
+
 export const indianStates = {
   'Maharashtra': ['Mumbai', 'Pune', 'Nagpur', 'Nashik', 'Aurangabad', 'Solapur', 'Thane', 'Kalyan', 'Vasai', 'Navi Mumbai', 'Amravati', 'Kolhapur', 'Sangli', 'Jalgaon', 'Akola', 'Latur', 'Dhule', 'Nanded', 'Chandrapur', 'Jalna'],
   'Delhi': ['New Delhi', 'Central Delhi', 'North Delhi', 'South Delhi', 'East Delhi', 'West Delhi', 'North East Delhi', 'North West Delhi', 'South West Delhi', 'Shahdara'],
@@ -33,7 +33,7 @@ export const indianStates = {
   'Ladakh': ['Leh', 'Kargil'],
 };
 
-// Areas/Localities data (simplified - can be expanded)
+
 export const areasByCity = {
   'Mumbai': ['Andheri', 'Bandra', 'Worli', 'Powai', 'Juhu', 'Malad', 'Bandra West', 'Kurla', 'Chembur', 'Goregaon'],
   'Delhi': ['Connaught Place', 'Dwarka', 'Gurgaon', 'Rohini', 'Vasant Kunj', 'Pitampura', 'Janakpuri', 'Laxmi Nagar', 'Rohini', 'Paschim Vihar'],

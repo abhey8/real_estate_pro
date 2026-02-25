@@ -44,8 +44,8 @@ const ListingDetail = () => {
     try {
       const response = await api.get('/favorites');
       const favorites = response.data.favorites;
-      // Depending on backend, favorites might be objects with listingId or populated listings
-      // Assuming simple checking for now
+      
+      
       setIsFavorite(favorites.some((f) => f.listingId === id || f.listing === id || f._id === id));
     } catch (error) {
       console.error('Error checking favorite:', error);
@@ -83,7 +83,7 @@ const ListingDetail = () => {
         <title>{listing.title} | RealEstate Pro</title>
       </Helmet>
 
-      {/* Image Gallery */}
+      
       <div className="listing-gallery-header">
         <div className="container">
           <div className="gallery-grid">
@@ -181,7 +181,7 @@ const ListingDetail = () => {
 
         </div>
 
-        {/* Sidebar */}
+        
         <div className="listing-sidebar">
           <div className="contact-card">
             <h3>Interested in this property?</h3>
