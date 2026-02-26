@@ -12,21 +12,21 @@ const Profile = () => {
     useEffect(() => {
         const fetchMyListings = async () => {
             try {
-                
-                
-                
-                
-                
-                
-                
-                
+                // Assuming there's an endpoint to get user's listings 
+                // OR we can filter listings by ownerId if the user object has an ID
+                // For now, let's try a specific endpoint if it exists, otherwise we might need to search
+                // Since we don't have a direct "my-listings" endpoint documentation, 
+                // I'll try to fetch all and filter or use a search query if supported.
+                // Actually, the best way in this codebase seems to be getting listings and filtering client side
+                // OR updating the backend.
+                // Let's assume we can fetch listings and filter by current user ID for this stub.
 
-                
-                
+                // Wait, listingController has getListings...
+                // Let's try to hit /listings?ownerId=${user.id} if supported, or just /listings
 
-                
+                // A better approach for this project structure:
                 const response = await api.get('/listings');
-                
+                // Filter client side as a fallback if query param not supported naturally yet
                 const userListings = response.data.filter(l => l.ownerId === user?.id);
                 setMyListings(userListings);
             } catch (error) {

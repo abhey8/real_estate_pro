@@ -131,7 +131,7 @@ const Home = () => {
     setSearch('');
   };
 
-
+  // Debounce filter changes
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       loadListings();
@@ -157,7 +157,7 @@ const Home = () => {
         <meta name="description" content="Browse premium residential and commercial properties for sale and rent. Search by location, type, and price." />
       </Helmet>
 
-
+      {/* Hero Section */}
       <section className="hero">
         <div className="container animate-fade-in">
           <h1 className="hero-title">
@@ -183,7 +183,7 @@ const Home = () => {
       </section>
 
       <div className="container main-content-layout">
-
+        {/* Sidebar Filters */}
         <aside className="filters-sidebar">
           <div className="sidebar-search">
             <label className="sidebar-search-label">Filter Properties</label>
@@ -269,7 +269,7 @@ const Home = () => {
           </div>
         </aside>
 
-
+        {/* Listings Grid */}
         <section className="listings-section">
           <div className="listings-header">
             <h2 style={{ fontSize: '1.75rem', margin: 0 }}>

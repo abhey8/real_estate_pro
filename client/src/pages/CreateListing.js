@@ -75,24 +75,24 @@ const CreateListing = () => {
     try {
       const formDataToSend = new FormData();
 
-
+      // Append text fields
       Object.keys(formData).forEach(key => {
         if (key !== 'images' && key !== 'amenities') {
           formDataToSend.append(key, formData[key]);
         }
       });
 
-
+      // Append amenities as string or individual fields? Backend logic handles split string
       if (formData.amenities) {
         formDataToSend.append('amenities', formData.amenities);
       }
 
-
+      // Append URL images (if any)
       if (formData.images) {
         formDataToSend.append('images', formData.images);
       }
 
-
+      // Append Files
       selectedFiles.forEach(file => {
         formDataToSend.append('imageFiles', file);
       });

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const ListingCard = ({ listing }) => {
-    
+    // Use first image or fallback
     const imageUrl = listing.images && listing.images.length > 0
         ? listing.images[0].url
         : 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80';

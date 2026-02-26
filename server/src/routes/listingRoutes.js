@@ -6,7 +6,7 @@ const listingController = require('../controllers/listingController');
 
 const router = express.Router();
 
-
+// Public routes
 router.get('/', listingController.getAllListings);
 router.get('/locations', listingController.getLocations);
 router.post('/compare', listingController.compareListings);
@@ -14,7 +14,7 @@ router.get('/:id', listingController.getListingById);
 
 const upload = require('../middleware/upload');
 
-
+// Protected routes
 router.post('/', authenticateToken, upload.array('imageFiles', 5), (req, res, next) => {
     console.log('--- Create Listing Request ---');
     console.log('Body:', req.body);
@@ -34,7 +34,7 @@ router.post('/', authenticateToken, upload.array('imageFiles', 5), (req, res, ne
 router.put('/:id', authenticateToken, listingController.updateListing);
 router.delete('/:id', authenticateToken, listingController.deleteListing);
 
-
+// Special case: Recommendations (Protected)
 router.get('/user/recommendations', authenticateToken, listingController.getRecommendations);
 
 module.exports = router;

@@ -123,7 +123,7 @@ const createListing = async (req, res) => {
 
         let processedImages = [];
 
-        
+        // Handle URL images
         if (images) {
             const urlImages = Array.isArray(images) ? images : images.split('\n');
             processedImages = urlImages.map(url => ({
@@ -131,14 +131,14 @@ const createListing = async (req, res) => {
             })).filter(img => img.url);
         }
 
-        
+        // Handle Uploaded Files
         if (req.files && Array.isArray(req.files) && req.files.length > 0) {
             const uploadedImages = req.files.map(file => ({
                 url: `${req.protocol}://${req.get('host')}/uploads/${file.filename}`
             }));
             processedImages = [...processedImages, ...uploadedImages];
         } else if (req.file) {
-            
+            // Handle single file case if ever needed
             processedImages.push({
                 url: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
             });
@@ -167,7 +167,7 @@ const createListing = async (req, res) => {
             images: processedImages
         });
 
-        
+        // Populate owner manually or refetch
         await listing.populate('owner', 'name email phone');
 
         res.status(201).json(listing);
@@ -190,7 +190,7 @@ const updateListing = async (req, res) => {
             return res.status(404).json({ error: 'Listing not found' });
         }
 
-        
+        // Check ownership (using .toString() for ObjectId comparison)
         if (listing.owner.toString() !== req.user._id.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({ error: 'Not authorized to update this listing' });
         }
@@ -284,7 +284,7 @@ const getRecommendations = async (req, res) => {
     try {
         const { limit = 10 } = req.query;
 
-        
+        // Get user's favorite property types
         const userFavorites = await Favorite.find({ user: req.user._id }).populate('listing');
         const favoritePropertyTypes = [...new Set(userFavorites.map(f => f.listing ? f.listing.propertyType : null).filter(Boolean))];
 

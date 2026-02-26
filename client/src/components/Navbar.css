@@ -1,5 +1,5 @@
 .navbar {
-  
+  /* No background here, handled by global index.css for consistency */
   border-bottom: 1px solid rgba(226, 232, 240, 0.6);
   position: sticky;
   top: 0;
@@ -14,7 +14,7 @@
 }
 
 .navbar-logo {
-  
+  /* Typography handled by index.css */
   display: flex;
   align-items: center;
   gap: 0.5rem;

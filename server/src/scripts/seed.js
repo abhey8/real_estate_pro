@@ -8,7 +8,7 @@ const Listing = require('../models/Listing');
 const Favorite = require('../models/Favorite');
 const LoanApplication = require('../models/LoanApplication');
 
-
+// Constants
 const PROPERTY_TYPES = ['Apartment', 'House', 'Villa', 'Plot', 'Commercial', 'Office'];
 const LISTING_TYPES = ['BUY', 'RENT', 'SELL'];
 const STATUSES = ['ACTIVE', 'SOLD', 'RENTED'];
@@ -40,17 +40,17 @@ async function seed() {
 
     console.log('Creating users...');
 
-    
+    // Create fixed users for testing
     const adminUser = await User.create({
         name: 'Admin User',
         email: 'admin@example.com',
-        password: 'password123', 
-        
-        
-        
-        
-        
-        
+        password: 'password123', // In real app, hash this! Note: The current model stores plain text or uses pre-save hook. Assuming pre-save hook handles hashing if present, or we should hash it. 
+        // Checking User model... if it has hashing middleware, plain text is fine. If not, we might need to hash.
+        // For now, let's assume the controller/model handles it or just plain for seed.
+        // Wait, the authController hashes it. The model probably doesn't. 
+        // To be safe and since I can't easily import bcrypt here without checking if it's installed (it is), 
+        // I will use a simple hash or just plain text if the auth middleware handles login.
+        // Actually, let's import bcrypt since it's in package.json.
         phone: '9876543210',
         role: 'ADMIN'
     });
@@ -58,7 +58,7 @@ async function seed() {
     const bcrypt = require('bcrypt');
     const hashedPassword = await bcrypt.hash('password123', 10);
 
-    
+    // Update admin with hashed password
     await User.findByIdAndUpdate(adminUser._id, { password: hashedPassword });
 
     const agentUser = await User.create({
@@ -77,7 +77,7 @@ async function seed() {
         role: 'USER'
     });
 
-    
+    // Create random users
     const randomUsers = [];
     for (let i = 0; i < 20; i++) {
         randomUsers.push(await User.create({
@@ -121,7 +121,7 @@ async function seed() {
             status: Math.random() > 0.8 ? (Math.random() > 0.5 ? 'SOLD' : 'RENTED') : 'ACTIVE',
             address: faker.location.streetAddress(),
             city: city,
-            state: 'State', 
+            state: 'State', // Simplified for now
             country: 'India',
             zipCode: faker.location.zipCode(),
             amenities: faker.helpers.arrayElements(AMENITIES_LIST, { min: 3, max: 10 }),
@@ -137,7 +137,7 @@ async function seed() {
         const user = allUsers[Math.floor(Math.random() * allUsers.length)];
         const listing = listings[Math.floor(Math.random() * listings.length)];
 
-        
+        // Check duplicate
         const exists = await Favorite.findOne({ user: user._id, listing: listing._id });
         if (!exists) {
             await Favorite.create({ user: user._id, listing: listing._id });
