@@ -4,7 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
 
 // Components
-import Navbar from './components/Navbar';
+import { Navigation } from './new-src/app/components/Navigation';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -15,8 +15,12 @@ import EditListing from './pages/EditListing';
 import Favorites from './pages/Favorites';
 import Recommendations from './pages/Recommendations';
 import LoanApplication from './pages/LoanApplication';
-import Compare from './pages/Compare';
 import Profile from './pages/Profile';
+import Properties from './pages/Properties';
+import MapView from './pages/MapView';
+import Contact from './pages/Contact';
+import NotFound from './pages/NotFound';
+import { Footer } from './new-src/app/components/Footer';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -52,10 +56,13 @@ function AppContent() {
   return (
     <Router>
       <div className="App">
-        <Navbar />
+        <Navigation />
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/properties" element={<Properties />} />
+            <Route path="/map-view" element={<MapView />} />
+            <Route path="/contact" element={<Contact />} />
             <Route
               path="/login"
               element={
@@ -129,10 +136,10 @@ function AppContent() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/compare" element={<Compare />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
+        <Footer />
       </div>
     </Router>
   );
