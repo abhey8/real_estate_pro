@@ -1,8 +1,10 @@
 import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Bed, Bath, Square, MapPin, Heart } from 'lucide-react';
 import { Property } from '../data/properties';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import api from '../../../utils/api';
+import { useAuth } from '../../../context/AuthContext';
 
 interface PropertyCardProps {
   property: Property;
@@ -11,6 +13,25 @@ interface PropertyCardProps {
 
 export function PropertyCard({ property, index }: PropertyCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated && localStorage.getItem('token')) {
+      checkFavorite();
+    }
+  }, [isAuthenticated, property.id]);
+
+  const checkFavorite = async () => {
+    try {
+      const response = await api.get('/favorites');
+      const favorites = response.data.favorites || [];
+      setIsFavorite(favorites.some((f: any) => f.listingId === property.id || f.listing === property.id || f._id === property.id));
+    } catch (error) {
+      console.error('Error checking favorite:', error);
+    }
+  };
 
   const formatPrice = (price: number, status: string) => {
     if (status === 'rent') {
@@ -27,7 +48,7 @@ export function PropertyCard({ property, index }: PropertyCardProps) {
       whileHover={{ y: -8 }}
       className="group"
     >
-      <Link to={`/properties/${property.id}`}>
+      <Link to={`/listings/${property.id}`}>
         <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300">
           {/* Image */}
           <div className="relative aspect-[4/3] overflow-hidden">
@@ -50,11 +71,30 @@ export function PropertyCard({ property, index }: PropertyCardProps) {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              onClick={(e) => {
+              disabled={favoriteLoading}
+              onClick={async (e) => {
                 e.preventDefault();
-                setIsFavorite(!isFavorite);
+                e.stopPropagation();
+                if (!isAuthenticated) {
+                  navigate('/login');
+                  return;
+                }
+                setFavoriteLoading(true);
+                try {
+                  if (isFavorite) {
+                    await api.delete(`/favorites/${property.id}`);
+                    setIsFavorite(false);
+                  } else {
+                    await api.post(`/favorites/${property.id}`);
+                    setIsFavorite(true);
+                  }
+                } catch (error) {
+                  console.error('Error updating favorite:', error);
+                } finally {
+                  setFavoriteLoading(false);
+                }
               }}
-              className="absolute top-4 right-4 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center"
+              className="absolute top-4 right-4 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center disabled:opacity-50"
             >
               <Heart
                 className={`w-5 h-5 transition-colors ${
