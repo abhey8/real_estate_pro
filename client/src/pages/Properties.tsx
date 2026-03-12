@@ -23,6 +23,7 @@ export default function Properties() {
 
   useEffect(() => {
     loadListings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   const loadListings = async () => {

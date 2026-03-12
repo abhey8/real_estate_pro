@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
-import { MapPin } from 'lucide-react';
 import { Property } from '../data/properties';
 import 'leaflet/dist/leaflet.css';
 

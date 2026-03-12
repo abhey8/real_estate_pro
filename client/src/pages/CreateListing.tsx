@@ -48,6 +48,7 @@ export default function CreateListing() {
       const areas = getAreasByCity(formData.city);
       setAvailableAreas(areas);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData?.city]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {

@@ -47,6 +47,7 @@ export default function ListingDetail() {
     if (isAuthenticated && localStorage.getItem('token')) {
       checkFavorite();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isAuthenticated]);
 
   const loadListing = async () => {

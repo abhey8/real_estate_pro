@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowRight, Search, TrendingUp, Shield, Award, Map, Sparkles, Crown, Globe } from 'lucide-react';
+import { ArrowRight, Shield, Award, Map, Sparkles, Crown, Globe } from 'lucide-react';
 import { Button } from '../new-src/app/components/ui/button';
 import { PropertyCard } from '../new-src/app/components/PropertyCard';
 import api from '../utils/api';
