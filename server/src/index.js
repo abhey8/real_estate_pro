@@ -41,6 +41,7 @@ app.get('/api/health', (req, res) => {
 
 // Fallback for React routing (serve index.html for non-API routes)
 app.get('*', (req, res) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.sendFile(path.join(clientBuildPath, 'index.html'));
 });
 
