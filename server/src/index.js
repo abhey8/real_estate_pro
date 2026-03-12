@@ -32,7 +32,14 @@ app.use('/api/loans', loanRoutes);
 const clientBuildPath = path.join(__dirname, '../../client/build');
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-app.use(express.static(clientBuildPath));
+app.use(express.static(clientBuildPath, {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.html')) {
+            // Force no-cache for HTML files
+            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+        }
+    }
+}));
 
 // Health check
 app.get('/api/health', (req, res) => {
