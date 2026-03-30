@@ -49,7 +49,7 @@ export default function Favorites() {
   return (
     <div className="min-h-screen pt-20 pb-16 px-4 bg-gray-50">
       <Helmet>
-        <title>My Favorites | RealEstate Pro</title>
+        <title>My Favorites | Real Estate Pro</title>
       </Helmet>
 
       <div className="max-w-7xl mx-auto">

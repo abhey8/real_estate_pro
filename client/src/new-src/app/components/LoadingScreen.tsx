@@ -1,5 +1,4 @@
 import { motion } from 'motion/react';
-import { Building2 } from 'lucide-react';
 
 export function LoadingScreen() {
   return (
@@ -19,16 +18,24 @@ export function LoadingScreen() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="w-16 h-16 mx-auto mb-4 bg-black rounded-lg flex items-center justify-center"
+          className="w-16 h-16 mx-auto mb-4 flex items-center justify-center"
         >
-          <Building2 className="w-8 h-8 text-white" />
+          <img
+            src="/logo.png"
+            alt="Real Estate Pro logo"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = '/logo.svg';
+            }}
+            className="w-16 h-16 object-contain rounded-full"
+          />
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <h2 className="text-xl tracking-tight">LUXE</h2>
+          <h2 className="text-xl tracking-tight">Real Estate Pro</h2>
           <p className="text-sm opacity-60 mt-1">Loading...</p>
         </motion.div>
       </motion.div>

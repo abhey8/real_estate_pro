@@ -41,7 +41,7 @@ export default function Login() {
   return (
     <div className="min-h-screen pt-24 pb-12 px-4 bg-gray-50 flex items-center justify-center">
       <Helmet>
-        <title>Login | RealEstate Pro</title>
+        <title>Login | Real Estate Pro</title>
       </Helmet>
       
       <motion.div

@@ -34,7 +34,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
-        <title>Find Your Dream Property | RealEstate Pro</title>
+        <title>Find Your Dream Property | Real Estate Pro</title>
         <meta name="description" content="Browse premium residential and commercial properties for sale and rent. Search by location, type, and price." />
       </Helmet>
 
@@ -190,7 +190,7 @@ export default function Home() {
               <Sparkles className="w-6 h-6" />
             </motion.div>
             <h2 className="text-5xl md:text-6xl mb-6 tracking-tighter font-light">
-              The LUXE Difference
+              The Real Estate Pro Difference
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light">
               Unparalleled service and expertise in ultra-luxury real estate for the world's

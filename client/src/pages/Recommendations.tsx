@@ -38,7 +38,7 @@ export default function Recommendations() {
   return (
     <div className="min-h-screen pt-20 pb-16 px-4 bg-gray-50">
       <Helmet>
-        <title>Recommendations | RealEstate Pro</title>
+        <title>Recommendations | Real Estate Pro</title>
       </Helmet>
 
       <div className="max-w-7xl mx-auto">

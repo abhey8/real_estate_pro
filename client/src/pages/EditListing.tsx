@@ -110,7 +110,7 @@ export default function EditListing() {
   return (
     <div className="min-h-screen pt-20 pb-16 px-4 bg-gray-50">
       <Helmet>
-        <title>Edit Listing | RealEstate Pro</title>
+        <title>Edit Listing | Real Estate Pro</title>
       </Helmet>
 
       <div className="max-w-4xl mx-auto">

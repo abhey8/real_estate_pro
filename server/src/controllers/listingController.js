@@ -12,6 +12,11 @@ const getAllListings = async (req, res) => {
             city,
             state,
             bedrooms,
+            minArea,
+            maxArea,
+            locality,
+            constructionStatus,
+            postedBy,
             status = 'ACTIVE',
             limit = 50,
             skip = 0,
@@ -27,7 +32,8 @@ const getAllListings = async (req, res) => {
                 { description: { $regex: search, $options: 'i' } },
                 { city: { $regex: search, $options: 'i' } },
                 { state: { $regex: search, $options: 'i' } },
-                { address: { $regex: search, $options: 'i' } }
+                { address: { $regex: search, $options: 'i' } },
+                { area: { $regex: search, $options: 'i' } }
             ];
         }
 
@@ -37,24 +43,74 @@ const getAllListings = async (req, res) => {
             if (maxPrice) query.price.$lte = parseFloat(maxPrice);
         }
 
+        if (minArea || maxArea) {
+            query.areaSqFt = {};
+            if (minArea) query.areaSqFt.$gte = parseFloat(minArea);
+            if (maxArea) query.areaSqFt.$lte = parseFloat(maxArea);
+        }
+
         if (propertyType) {
-            query.propertyType = propertyType;
+            const propertyTypes = propertyType
+                .split(',')
+                .map((type) => type.trim())
+                .filter(Boolean);
+            const propertyTypePatterns = propertyTypes.map(
+                (type) => new RegExp(`^${type.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i')
+            );
+            query.propertyType = propertyTypePatterns.length > 1
+                ? { $in: propertyTypePatterns }
+                : propertyTypePatterns[0];
         }
 
         if (listingType) {
-            query.listingType = listingType;
+            const listingTypes = listingType
+                .split(',')
+                .map((type) => type.trim())
+                .filter(Boolean);
+            query.listingType = listingTypes.length > 1
+                ? { $in: listingTypes }
+                : listingTypes[0];
         }
 
-        if (city && !search) {
+        if (city) {
             query.city = { $regex: city, $options: 'i' };
         }
 
-        if (state && !search) {
+        if (state) {
             query.state = { $regex: state, $options: 'i' };
+        }
+
+        if (locality) {
+            const localities = locality
+                .split(',')
+                .map((value) => value.trim())
+                .filter(Boolean);
+            if (localities.length > 0) {
+                const localityRegex = localities.map((value) => ({ $regex: value, $options: 'i' }));
+                query.$and = query.$and || [];
+                query.$and.push({
+                    $or: [
+                        { area: { $in: localityRegex } },
+                        { address: { $in: localityRegex } }
+                    ]
+                });
+            }
         }
 
         if (bedrooms) {
             query.bedrooms = { $gte: parseInt(bedrooms) };
+        }
+
+        if (constructionStatus) {
+            query.description = {
+                $regex: constructionStatus.replace(/_/g, ' '),
+                $options: 'i'
+            };
+        }
+
+        if (postedBy) {
+            // Current schema tracks owner account only; keep filter compatible without breaking old data.
+            query.owner = { $exists: true };
         }
 
         if (userId) {

@@ -72,7 +72,7 @@ export default function ListingDetail() {
         bathrooms: listing.bathrooms || 0,
         area: listing.areaSqFt || listing.area || listing.squareFootage || 0,
         yearBuilt: listing.yearBuilt || 2020, // default if not on backend yet
-        coordinates: [listing.latitude || 37.7749, listing.longitude || -122.4194],
+        coordinates: [listing.latitude || 28.6139, listing.longitude || 77.2090],
         features: listing.amenities?.length > 0 
             ? listing.amenities 
             : ['Central Air', 'Hardwood Floors', 'Updated Kitchen'],
@@ -142,10 +142,16 @@ export default function ListingDetail() {
   }
 
   const formatPrice = (price: number, status: string) => {
+    const inr = new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0,
+    });
+
     if (status === 'rent') {
-      return `$${price.toLocaleString()}/month`;
+      return `${inr.format(price)}/month`;
     }
-    return `$${price.toLocaleString()}`;
+    return inr.format(price);
   };
 
   const handleContactSubmit = (e: React.FormEvent) => {
@@ -169,7 +175,7 @@ export default function ListingDetail() {
   return (
     <div className="min-h-screen pt-20">
       <Helmet>
-        <title>{property.title} | RealEstate Pro</title>
+        <title>{property.title} | Real Estate Pro</title>
       </Helmet>
 
       {/* Back Button */}
@@ -423,11 +429,11 @@ export default function ListingDetail() {
                       <span>{property.owner?.phone || '+1 (555) 123-4567'}</span>
                     </a>
                     <a
-                      href={`mailto:${property.owner?.email || 'contact@luxe.com'}`}
+                      href={`mailto:${property.owner?.email || 'contact@realestatepro.com'}`}
                       className="flex items-center gap-3 p-3 rounded-lg hover:bg-white transition-colors"
                     >
                       <Mail className="w-5 h-5" />
-                      <span>{property.owner?.email || 'contact@luxe.com'}</span>
+                      <span>{property.owner?.email || 'contact@realestatepro.com'}</span>
                     </a>
                   </div>
                 </div>

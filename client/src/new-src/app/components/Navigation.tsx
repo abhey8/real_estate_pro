@@ -49,10 +49,16 @@ export function Navigation() {
               whileTap={{ scale: 0.95 }}
               className="flex items-center gap-2"
             >
-              <div className="w-8 h-8 md:w-10 md:h-10 bg-black rounded-lg flex items-center justify-center">
-                <Building2 className="w-5 h-5 md:w-6 md:h-6 text-white" />
-              </div>
-              <span className="text-xl md:text-2xl tracking-tight">LUXE</span>
+              <img
+                src="/logo.png"
+                alt="Real Estate Pro logo"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/logo.svg';
+                }}
+                className="w-8 h-8 md:w-10 md:h-10 object-contain rounded-full"
+              />
+              <span className="text-lg md:text-xl tracking-tight">Real Estate Pro</span>
             </motion.div>
           </Link>
 

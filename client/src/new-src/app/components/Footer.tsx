@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { Building2, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -17,13 +17,19 @@ export function Footer() {
               viewport={{ once: true }}
               className="flex items-center gap-2 mb-4"
             >
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-black" />
-              </div>
-              <span className="text-2xl tracking-tight">LUXE</span>
+              <img
+                src="/logo.png"
+                alt="Real Estate Pro logo"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/logo.svg';
+                }}
+                className="w-10 h-10 object-contain rounded-full"
+              />
+              <span className="text-2xl tracking-tight">Real Estate Pro</span>
             </motion.div>
             <p className="text-sm opacity-60 leading-relaxed">
-              Your trusted partner in finding the perfect property. Luxury real estate solutions tailored to your needs.
+              Your trusted partner in finding the perfect property with reliable real estate solutions tailored to your needs.
             </p>
           </div>
 
@@ -50,7 +56,7 @@ export function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-sm opacity-60">
                 <Mail className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>contact@luxe.com</span>
+                <span>contact@realestatepro.com</span>
               </li>
               <li className="flex items-start gap-3 text-sm opacity-60">
                 <Phone className="w-4 h-4 mt-0.5 flex-shrink-0" />
@@ -90,7 +96,7 @@ export function Footer() {
 
         <div className="border-t border-white/10 mt-12 pt-8 text-center">
           <p className="text-sm opacity-60">
-            © {currentYear} LUXE Real Estate. All rights reserved.
+            © {currentYear} Real Estate Pro. All rights reserved.
           </p>
         </div>
       </div>

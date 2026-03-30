@@ -11,6 +11,12 @@ interface MapViewProps {
   className?: string;
 }
 
+const INR_FORMATTER = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  maximumFractionDigits: 0,
+});
+
 export function MapView({
   properties,
   onMarkerClick,
@@ -60,8 +66,8 @@ export function MapView({
           <p style="margin: 0; font-size: 16px; font-weight: 600;">
             ${
               property.status === 'rent'
-                ? `$${property.price.toLocaleString()}/mo`
-                : `$${(property.price / 1000).toFixed(0)}K`
+                ? `${INR_FORMATTER.format(property.price)}/month`
+                : `${INR_FORMATTER.format(property.price)}`
             }
           </p>
         </div>

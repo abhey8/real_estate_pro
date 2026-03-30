@@ -34,10 +34,16 @@ export function PropertyCard({ property, index }: PropertyCardProps) {
   };
 
   const formatPrice = (price: number, status: string) => {
+    const inr = new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0,
+    });
+
     if (status === 'rent') {
-      return `$${price.toLocaleString()}/mo`;
+      return `${inr.format(price)}/month`;
     }
-    return `$${(price / 1000).toFixed(0)}K`;
+    return inr.format(price);
   };
 
   return (

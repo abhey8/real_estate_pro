@@ -32,7 +32,7 @@ export default function Contact() {
   return (
     <div className="min-h-screen pt-20 md:pt-24">
       <Helmet>
-        <title>Contact Us | RealEstate Pro</title>
+        <title>Contact Us | Real Estate Pro</title>
       </Helmet>
       
       {/* Header */}
@@ -86,7 +86,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="text-lg mb-1">Email</h3>
-                    <p className="opacity-60">contact@luxe.com</p>
+                    <p className="opacity-60">contact@realestatepro.com</p>
                     <p className="text-sm opacity-40 mt-1">We'll respond within 24 hours</p>
                   </div>
                 </motion.div>

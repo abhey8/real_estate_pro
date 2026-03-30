@@ -63,7 +63,7 @@ export default function Register() {
   return (
     <div className="min-h-screen pt-24 pb-12 px-4 bg-gray-50 flex items-center justify-center">
       <Helmet>
-        <title>Sign Up | RealEstate Pro</title>
+        <title>Sign Up | Real Estate Pro</title>
       </Helmet>
 
       <motion.div

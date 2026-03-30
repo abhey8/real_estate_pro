@@ -130,7 +130,7 @@ export default function CreateListing() {
   return (
     <div className="min-h-screen pt-20 pb-16 px-4 bg-gray-50">
       <Helmet>
-        <title>Create Listing | RealEstate Pro</title>
+        <title>Create Listing | Real Estate Pro</title>
       </Helmet>
 
       <div className="max-w-4xl mx-auto">
