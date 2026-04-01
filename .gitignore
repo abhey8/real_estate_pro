@@ -6,6 +6,10 @@ client/node_modules/
 .env
 .env.local
 .env.production
+server/.env
+client/.env
+client/.env.local
+client/.env.production
 
 # Build outputs
 client/build/
