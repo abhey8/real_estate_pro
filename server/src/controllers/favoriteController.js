@@ -62,7 +62,9 @@ const getFavorites = async (req, res) => {
             })
             .sort({ createdAt: -1 });
 
-        res.json({ favorites });
+        const validFavorites = favorites.filter((favorite) => favorite.listing);
+
+        res.json({ favorites: validFavorites });
     } catch (error) {
         console.error('Error fetching favorites:', error);
         res.status(500).json({ error: 'Failed to fetch favorites' });

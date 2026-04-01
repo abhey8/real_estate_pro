@@ -22,6 +22,8 @@ import { MapView } from '../new-src/app/components/MapView';
 import { Input } from '../new-src/app/components/ui/input';
 import { Textarea } from '../new-src/app/components/ui/textarea';
 import { Label } from '../new-src/app/components/ui/label';
+import { getFavoriteListingId } from '../utils/favorites';
+import { resolveListingCoordinates } from '../utils/locationMap';
 
 export default function ListingDetail() {
   const { id } = useParams();
@@ -60,7 +62,7 @@ export default function ListingDetail() {
       const adaptedProperty = {
         id: listing._id || listing.id,
         title: listing.title,
-        location: `${listing.address}, ${listing.city}`,
+        location: [listing.address, listing.city, listing.state].filter(Boolean).join(', '),
         price: listing.price,
         status: listing.listingType?.toLowerCase() || 'buy',
         description: listing.description || 'No description provided.',
@@ -72,7 +74,7 @@ export default function ListingDetail() {
         bathrooms: listing.bathrooms || 0,
         area: listing.areaSqFt || listing.area || listing.squareFootage || 0,
         yearBuilt: listing.yearBuilt || 2020, // default if not on backend yet
-        coordinates: [listing.latitude || 28.6139, listing.longitude || 77.2090],
+        coordinates: resolveListingCoordinates(listing),
         features: listing.amenities?.length > 0 
             ? listing.amenities 
             : ['Central Air', 'Hardwood Floors', 'Updated Kitchen'],
@@ -91,7 +93,7 @@ export default function ListingDetail() {
     try {
       const response = await api.get('/favorites');
       const favorites = response.data.favorites || [];
-      setIsFavorite(favorites.some((f: any) => f.listingId === id || f.listing === id || f._id === id));
+      setIsFavorite(favorites.some((favorite: any) => getFavoriteListingId(favorite) === String(id)));
     } catch (error) {
       console.error('Error checking favorite:', error);
     }

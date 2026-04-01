@@ -115,7 +115,7 @@ export default function Home() {
             <Link to="/map-view">
               <Button size="lg" variant="outline" className="h-14 px-10 text-base bg-transparent border-white/30 text-white hover:bg-white/10">
                 <Map className="w-5 h-5 mr-2" />
-                Map View
+                Map Search
               </Button>
             </Link>
           </motion.div>

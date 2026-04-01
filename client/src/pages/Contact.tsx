@@ -1,12 +1,16 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react';
+import { CheckCircle, Clock3, ExternalLink, Mail, MapPin, Send } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
 import { Button } from '../new-src/app/components/ui/button';
 import { Input } from '../new-src/app/components/ui/input';
 import { Textarea } from '../new-src/app/components/ui/textarea';
 import { Label } from '../new-src/app/components/ui/label';
+import { buildOsmEmbedUrl } from '../utils/locationMap';
+
+const OFFICE_COORDINATES: [number, number] = [18.5957701, 73.9245544];
+const OFFICE_QUERY = 'Yawspace Boys Hostel near Revel Orchard Lohgaon Pune Maharashtra';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -16,238 +20,256 @@ export default function Contact() {
     subject: '',
     message: '',
   });
-
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Simulate contact form submission
+  const officeMapUrl = useMemo(() => buildOsmEmbedUrl(OFFICE_COORDINATES, 0.012), []);
+  const googleMapsUrl = useMemo(
+    () => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(OFFICE_QUERY)}`,
+    []
+  );
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
     setIsSubmitted(true);
-    setTimeout(() => {
+
+    window.setTimeout(() => {
       setIsSubmitted(false);
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
     }, 3000);
   };
 
   return (
-    <div className="min-h-screen pt-20 md:pt-24">
+    <div className="min-h-screen bg-slate-50 pt-20 md:pt-24">
       <Helmet>
         <title>Contact Us | Real Estate Pro</title>
       </Helmet>
-      
-      {/* Header */}
-      <section className="bg-black text-white py-16 px-4">
-        <div className="max-w-7xl mx-auto">
+
+      <section className="px-4 py-8">
+        <div className="mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            className="overflow-hidden rounded-[34px] border border-slate-900/5 bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.18),transparent_28%),linear-gradient(135deg,#020617,#111827_58%,#1e293b)] px-6 py-10 text-white shadow-[0_24px_80px_rgba(15,23,42,0.15)] md:px-10"
           >
-            <h1 className="text-4xl md:text-6xl mb-4 tracking-tight">Get in Touch</h1>
-            <p className="text-xl opacity-80 max-w-2xl">
-              Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
-            </p>
+            <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+              <div>
+                <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.26em] text-amber-300">
+                  <Mail className="h-4 w-4" />
+                  Contact Real Estate Pro
+                </p>
+                <h1 className="mt-5 text-4xl font-semibold tracking-tight md:text-5xl">Let’s make property decisions feel easier and more personal.</h1>
+                <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300 md:text-lg">
+                  Reach out for listing help, buyer support, or product questions. The contact experience now points to Pune instead of placeholder demo locations.
+                </p>
+              </div>
+
+              <div className="rounded-[28px] border border-white/10 bg-white/6 p-5 backdrop-blur-sm">
+                <div className="space-y-4 text-sm text-slate-200">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="mt-0.5 h-5 w-5 text-amber-300" />
+                    <p>Office map centered on Lohgaon, near Revel Orchard, so the page now reflects your actual working base.</p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Clock3 className="mt-0.5 h-5 w-5 text-amber-300" />
+                    <p>Support hours are aligned to India time to feel consistent with the rest of the experience.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Contact Content */}
-      <section className="px-4 py-16">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Contact Information */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <h2 className="text-3xl mb-8 border-b pb-4">Contact Information</h2>
-              
-              <div className="space-y-6 mb-12">
-                <motion.div
-                  whileHover={{ x: 8 }}
-                  className="flex items-start gap-4 p-6 bg-gray-50 rounded-2xl border"
-                >
-                  <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg mb-1">Phone</h3>
-                    <p className="opacity-60">+1 (555) 123-4567</p>
-                    <p className="text-sm opacity-40 mt-1">Mon-Fri 9am-6pm EST</p>
-                  </div>
-                </motion.div>
+      <section className="px-4 pb-10">
+        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="space-y-5"
+          >
+            <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_16px_40px_rgba(15,23,42,0.06)] sm:p-8">
+              <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Contact Information</h2>
+              <p className="mt-3 text-sm leading-6 text-slate-500">
+                Use the channel that fits the conversation. For property-specific questions, linking the listing title in your message helps us reply faster.
+              </p>
 
-                <motion.div
-                  whileHover={{ x: 8 }}
-                  className="flex items-start gap-4 p-6 bg-gray-50 rounded-2xl border"
-                >
-                  <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-6 h-6 text-white" />
+              <div className="mt-6 space-y-4">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900 text-white">
+                      <Mail className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-900">Email</h3>
+                      <p className="mt-1 text-slate-600">contact@realestatepro.com</p>
+                      <p className="mt-1 text-sm text-slate-400">Best for enquiries, support, and callback requests.</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg mb-1">Email</h3>
-                    <p className="opacity-60">contact@realestatepro.com</p>
-                    <p className="text-sm opacity-40 mt-1">We'll respond within 24 hours</p>
-                  </div>
-                </motion.div>
+                </div>
 
-                <motion.div
-                  whileHover={{ x: 8 }}
-                  className="flex items-start gap-4 p-6 bg-gray-50 rounded-2xl border"
-                >
-                  <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-6 h-6 text-white" />
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900 text-white">
+                      <MapPin className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-900">Office</h3>
+                      <p className="mt-1 text-slate-600">Yawspace Boys Hostel, near Revel Orchard</p>
+                      <p className="text-slate-600">Lohgaon, Pune, Maharashtra 411047</p>
+                      <a
+                        href={googleMapsUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-slate-900 hover:text-slate-700"
+                      >
+                        Open in Google Maps
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg mb-1">Office</h3>
-                    <p className="opacity-60">123 Luxury Ave, Suite 100</p>
-                    <p className="opacity-60">Beverly Hills, CA 90210</p>
-                  </div>
-                </motion.div>
-              </div>
+                </div>
 
-              {/* Working Hours */}
-              <div className="bg-black text-white rounded-2xl p-8 shadow-xl">
-                <h3 className="text-2xl mb-6">Working Hours</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center pb-3 border-b border-white/10">
-                    <span className="opacity-80">Monday - Friday</span>
-                    <span>9:00 AM - 6:00 PM</span>
-                  </div>
-                  <div className="flex justify-between items-center pb-3 border-b border-white/10">
-                    <span className="opacity-80">Saturday</span>
-                    <span>10:00 AM - 4:00 PM</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="opacity-80">Sunday</span>
-                    <span className="opacity-60">Closed</span>
+                <div className="rounded-2xl border border-slate-200 bg-slate-900 p-5 text-white">
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-amber-300">
+                      <Clock3 className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold">Working Hours</h3>
+                      <div className="mt-3 space-y-2 text-sm text-slate-300">
+                        <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-2">
+                          <span>Monday - Friday</span>
+                          <span>10:00 AM - 7:00 PM IST</span>
+                        </div>
+                        <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-2">
+                          <span>Saturday</span>
+                          <span>11:00 AM - 4:00 PM IST</span>
+                        </div>
+                        <div className="flex items-center justify-between gap-4">
+                          <span>Sunday</span>
+                          <span className="text-slate-400">By appointment</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
+          </motion.div>
 
-            {/* Contact Form */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <div className="bg-white border rounded-2xl p-8 shadow-xl">
-                <h2 className="text-3xl mb-6 border-b pb-4">Send us a Message</h2>
-                
-                {isSubmitted ? (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex flex-col items-center justify-center py-16"
-                  >
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-                      className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6"
-                    >
-                      <CheckCircle className="w-12 h-12 text-white" />
-                    </motion.div>
-                    <h3 className="text-2xl mb-2">Message Sent!</h3>
-                    <p className="text-center opacity-60">
-                      Thank you for contacting us. We'll get back to you shortly.
-                    </p>
-                  </motion.div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Name *</Label>
-                        <Input
-                          id="name"
-                          placeholder="John Doe"
-                          value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          required
-                          className="w-full"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Phone *</Label>
-                        <Input
-                          id="phone"
-                          type="tel"
-                          placeholder="+1 (555) 000-0000"
-                          value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          required
-                          className="w-full"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email *</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="john@example.com"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        required
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="subject">Subject *</Label>
-                      <Input
-                        id="subject"
-                        placeholder="How can we help you?"
-                        value={formData.subject}
-                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                        required
-                        className="w-full"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="message">Message *</Label>
-                      <Textarea
-                        id="message"
-                        placeholder="Tell us more about your inquiry..."
-                        value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        rows={6}
-                        required
-                        className="w-full"
-                      />
-                    </div>
-
-                    <Button type="submit" className="w-full h-12 text-lg">
-                      <Send className="w-5 h-5 mr-2" />
-                      Send Message
-                    </Button>
-                  </form>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Map Section */}
-      <section className="px-4 pb-16">
-        <div className="max-w-7xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="h-[400px] rounded-2xl border overflow-hidden shadow-lg p-2 bg-white"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.08 }}
+            className="space-y-5"
           >
-            <iframe
-              title="office-location"
-              src="https://www.openstreetmap.org/export/embed.html?bbox=-118.40860366821291%2C34.069152527330265%2C-118.39215278625489%2C34.078034863536854&layer=mapnik&marker=34.073593822097546%2C-118.40037822723389"
-              className="w-full h-full rounded-xl"
-              style={{ border: 0 }}
-              loading="lazy"
-            ></iframe>
+            <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_16px_40px_rgba(15,23,42,0.06)] sm:p-8">
+              <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Send us a Message</h2>
+              <p className="mt-3 text-sm leading-6 text-slate-500">
+                Share what you need and we’ll get back to you with the right next step.
+              </p>
+
+              {isSubmitted ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex flex-col items-center justify-center rounded-[24px] bg-slate-50 px-6 py-16 text-center"
+                >
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-500 text-white shadow-lg">
+                    <CheckCircle className="h-10 w-10" />
+                  </div>
+                  <h3 className="mt-6 text-2xl font-semibold text-slate-900">Message sent</h3>
+                  <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+                    Thank you for reaching out. We’ll respond as soon as possible.
+                  </p>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Name *</Label>
+                      <Input
+                        id="name"
+                        value={formData.name}
+                        onChange={(event) => setFormData({ ...formData, name: event.target.value })}
+                        placeholder="Your name"
+                        required
+                        className="h-11 rounded-xl border-slate-200 bg-white shadow-none"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(event) => setFormData({ ...formData, phone: event.target.value })}
+                        placeholder="Optional"
+                        className="h-11 rounded-xl border-slate-200 bg-white shadow-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(event) => setFormData({ ...formData, email: event.target.value })}
+                      placeholder="you@example.com"
+                      required
+                      className="h-11 rounded-xl border-slate-200 bg-white shadow-none"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="subject">Subject *</Label>
+                    <Input
+                      id="subject"
+                      value={formData.subject}
+                      onChange={(event) => setFormData({ ...formData, subject: event.target.value })}
+                      placeholder="How can we help?"
+                      required
+                      className="h-11 rounded-xl border-slate-200 bg-white shadow-none"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="message">Message *</Label>
+                    <Textarea
+                      id="message"
+                      value={formData.message}
+                      onChange={(event) => setFormData({ ...formData, message: event.target.value })}
+                      rows={6}
+                      placeholder="Tell us more about your enquiry..."
+                      required
+                      className="min-h-[170px] rounded-2xl border-slate-200 bg-white shadow-none"
+                    />
+                  </div>
+
+                  <Button type="submit" className="h-12 w-full rounded-xl bg-slate-900 text-base text-white hover:bg-slate-800">
+                    <Send className="mr-2 h-5 w-5" />
+                    Send Message
+                  </Button>
+                </form>
+              )}
+            </div>
+
+            <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white p-3 shadow-[0_16px_40px_rgba(15,23,42,0.06)]">
+              <div className="overflow-hidden rounded-[22px] border border-slate-200">
+                <iframe
+                  title="office-location"
+                  src={officeMapUrl}
+                  className="h-[420px] w-full"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                ></iframe>
+              </div>
+              <p className="px-3 pb-1 pt-3 text-xs leading-5 text-slate-500">
+                Map pin is centered on the Lohgaon / Revel Orchard area based on available open map geocoding for your shared address.
+              </p>
+            </div>
           </motion.div>
         </div>
       </section>

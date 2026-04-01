@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="825" viewBox="0 0 1200 825" role="img" aria-label="Property placeholder image">
+  <defs>
+    <linearGradient id="bg" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="55%" stop-color="#e2e8f0" />
+      <stop offset="100%" stop-color="#cbd5e1" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#102a5b" />
+      <stop offset="100%" stop-color="#d4a64a" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="825" fill="url(#bg)" />
+  <circle cx="962" cy="144" r="68" fill="#ffffff" opacity="0.8" />
+  <path d="M0 671C132 611 240 592 323 612C420 634 488 700 571 717C686 740 770 662 887 649C995 637 1092 677 1200 760V825H0V671Z" fill="#dbe4ee" />
+  <path d="M185 507H378V690H185Z" fill="#ffffff" opacity="0.96" />
+  <path d="M236 443H327L397 507H166L236 443Z" fill="url(#accent)" />
+  <rect x="242" y="553" width="78" height="137" fill="#102a5b" opacity="0.85" />
+  <rect x="208" y="541" width="23" height="35" fill="#d4a64a" opacity="0.85" />
+  <rect x="332" y="541" width="23" height="35" fill="#d4a64a" opacity="0.85" />
+  <path d="M489 406H704V690H489Z" fill="#ffffff" opacity="0.96" />
+  <path d="M548 324H646L735 406H458L548 324Z" fill="#102a5b" />
+  <rect x="536" y="467" width="39" height="55" fill="#d4a64a" opacity="0.75" />
+  <rect x="608" y="467" width="39" height="55" fill="#d4a64a" opacity="0.75" />
+  <rect x="536" y="559" width="39" height="55" fill="#d4a64a" opacity="0.75" />
+  <rect x="608" y="559" width="39" height="55" fill="#d4a64a" opacity="0.75" />
+  <path d="M803 447H1016V690H803Z" fill="#ffffff" opacity="0.96" />
+  <path d="M860 371H958L1046 447H775L860 371Z" fill="url(#accent)" />
+  <rect x="852" y="520" width="108" height="170" fill="#102a5b" opacity="0.88" />
+  <text x="90" y="120" font-family="Arial, sans-serif" font-size="42" fill="#334155" opacity="0.7">Real Estate Pro</text>
+  <text x="90" y="170" font-family="Arial, sans-serif" font-size="24" fill="#64748b">Awaiting listing image</text>
+</svg>

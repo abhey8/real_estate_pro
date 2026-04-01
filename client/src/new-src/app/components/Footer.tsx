@@ -64,7 +64,7 @@ export function Footer() {
               </li>
               <li className="flex items-start gap-3 text-sm opacity-60">
                 <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <span>123 Luxury Ave, Suite 100<br />Beverly Hills, CA 90210</span>
+                <span>Yawspace Boys Hostel, near Revel Orchard<br />Lohgaon, Pune, Maharashtra 411047</span>
               </li>
             </ul>
           </div>
